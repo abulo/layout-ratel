@@ -9,9 +9,9 @@ import (
 	"github.com/abulo/layout/initial"
 	"github.com/abulo/layout/initial/asset"
 	"github.com/abulo/layout/initial/view"
+	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/abulo/ratel/v3/gin"
 	"github.com/abulo/ratel/v3/gin/render"
-	"github.com/abulo/ratel/v3/logger"
 	"github.com/abulo/ratel/v3/pprof"
 	"github.com/abulo/ratel/v3/server/xgin"
 	"github.com/abulo/ratel/v3/util"
@@ -21,7 +21,6 @@ import (
 )
 
 func FormatDateTime(str interface{}) string {
-
 	if util.Empty(str) {
 		return ""
 	}

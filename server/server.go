@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/abulo/ratel/v3/app"
-	"github.com/abulo/ratel/v3/logger"
+	"github.com/abulo/ratel/v3/core/app"
+	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/sirupsen/logrus"
 )
 
