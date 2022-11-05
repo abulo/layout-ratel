@@ -1,0 +1,6 @@
+/* 加载就绪标志 */
+html #layuicss-treegridcss{display:none; position: absolute; width:1989px;}
+.treegrid-indent {width:16px; height: 12px; display: inline-block; position: relative;line-height: 16px;}
+.treegrid-expander {width:16px; height: 12px; display: inline-block; position: relative; cursor: pointer;line-height: 16px;}
+.treegrid-expander-expanded{background-image: url(collapse.png); }
+.treegrid-expander-collapsed{background-image: url(expand.png);}

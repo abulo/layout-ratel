@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" href="../css/weui.css"/>
+    <link rel="stylesheet" href="../css/weuix.css"/>
+
+    <script src="../js/zepto.min.js"></script>
+    <script src="../js/php.js"></script>
+    <script src="../js/eruda.js"></script>
+</head>
+
+<body ontouchstart>
+<div class="page-hd">
+    <h1 class="page-hd-title">
+      底部滚动加载1
+    </h1>
+    <p class="page-hd-desc">非插件底部自动滚动,记录原滚动位置,跳到详情页返回保留数据,只需要传入开始位置,每页显示数据量即可</p>
+</div>
+
+<div class="page-bd-15">
+    <div class="weui-cells" id="rank-list">
+    </div>
+
+    <div class="weui-loadmore" id="more">
+        <i class="weui-loading"></i>
+        <span class="weui-loadmore__tips">正在加载</span>
+    </div>
+</div>
+
+<script id="tpl" type="text/html">
+    <% for(var i in list) {   %>
+    <div class="weui-cell hand" data-id="<%=list[i].id%>">
+        <div class="weui-cell__bd">
+            <p><%=list[i].id%>姓名<%=list[i].zid%>金额<%=list[i].money%></p>
+        </div>
+        <div class="weui-cell__ft"><%=list[i].id%></div>
+    </div>
+    <% } %>
+</script>
+<script>
+    $('#more').hide();
+    let start = 0
+    let pagesize=15;
+    let flag=true
+    let loading=false
+    function ajaxpage(start1){
+        $.ajax({
+            type : "POST",
+            url : '/zanlist1',
+            data: {"start":start1,"pagesize":pagesize},
+            dataType : "json",
+            beforeSend:function(){
+                $("#more").show();
+            },
+            success : function(rs) {
+                if(rs.list==null){
+                    $("#more").html("没有更多数据了");
+                    return false
+                }
+                if(count(rs.list)<pagesize){
+                    flag=false//设置没有数据了标记
+                    $("#more").html("没有更多数据了");
+                }
+                $("#rank-list").append(tpl(document.getElementById('tpl').innerHTML,rs));
+                start = start1+count(rs.list)
+            },
+            timeout : 15000
+        });
+    }
+
+    $(window).scroll(
+        function() {
+            let scrollTop = $(this).scrollTop();
+            let scrollHeight = $(document).height();
+            let windowHeight = $(this).height();
+            if(scrollTop>scrollHeight-windowHeight-5){
+                if(loading) return;
+                loading = true;
+                setTimeout(function() {
+                    if(flag){
+                        ajaxpage(start)
+                    }
+                    loading = false;
+                }, 1500);
+            }
+
+        });
+    const goto=(id)=>{
+        sessionStorage.setItem('index_list',$("#rank-list").html());//存储列表数据
+        sessionStorage.setItem('index_start',start);//存储位置
+        sessionStorage.setItem('index_scroll',$(window).scrollTop());//存储滚动条位置
+        location.href="js91.html?id="+id;
+    }
+    $(document).on('tap click',"#rank-list .weui-cell",function(){
+        id = $(this).data('id');
+        goto(id);
+    })
+    $(function(){
+        var l = sessionStorage.getItem('index_list');
+        if(null !== l && '' !== l){
+            $("#rank-list").html(l);
+            $(window).scrollTop(sessionStorage.getItem('index_scroll'));
+            start = parseInt(sessionStorage.getItem('index_start'));
+            sessionStorage.removeItem('index_list');
+            sessionStorage.removeItem('index_page');
+            sessionStorage.removeItem('index_scroll');
+        }else{
+            ajaxpage(0);
+        }
+    })
+</script>
+<br>
+<br>
+<div class="weui-footer weui-footer_fixed-bottom">
+    <p class="weui-footer__links">
+        <a href="../index.html" class="weui-footer__link">WeUI首页</a>
+    </p>
+    <p class="weui-footer__text">Copyright &copy; Yoby</p>
+</div>
+</body>
+</html>

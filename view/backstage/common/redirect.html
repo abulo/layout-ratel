@@ -1,0 +1,12 @@
+{{ define "backstage/common/redirect.html"}}
+<script type="text/javascript" language="javascript" charset="utf-8">
+{{ if .redirect.notice }}
+alert({{.redirect.notice}});
+{{end}}
+if({{.redirect.parent_url}}){
+    window.parent.location.href = {{.redirect.parent_url}};
+}else{
+    window.location.href = {{.redirect.url}};
+}
+</script>
+{{ end}}
