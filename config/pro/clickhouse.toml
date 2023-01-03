@@ -22,6 +22,8 @@
         DisableMetric = false
         # 关闭链路追踪
         DisableTrace = false
+        #TimeZone 数据库时区
+        TimeZone = "PRC"
 [[proxyclickhouse]]
 Name = "clickhouse"
 Node = "clickhouse.common"

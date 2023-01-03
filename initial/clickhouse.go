@@ -36,6 +36,9 @@ func (initial *Initial) InitClickHouse() *Initial {
 		if OpenStrategy := cast.ToString(res["OpenStrategy"]); OpenStrategy != "" {
 			opt.OpenStrategy = OpenStrategy
 		}
+		if TimeZone := cast.ToString(res["TimeZone"]); TimeZone != "" {
+			opt.TimeZone = TimeZone
+		}
 		if Compress := cast.ToBool(res["Compress"]); Compress {
 			opt.Compress = true
 		} else {

@@ -10,12 +10,10 @@ import (
 	"github.com/abulo/layout/initial/asset"
 	"github.com/abulo/layout/initial/view"
 	"github.com/abulo/ratel/v3/core/logger"
-	"github.com/abulo/ratel/v3/gin"
-	"github.com/abulo/ratel/v3/gin/render"
-	"github.com/abulo/ratel/v3/pprof"
 	"github.com/abulo/ratel/v3/server/xgin"
 	"github.com/abulo/ratel/v3/util"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -54,22 +52,22 @@ func (eng *Engine) NewHttpServer() error {
 	server.SetTrustedProxies([]string{"0.0.0.0/0"})
 
 	//辅助函数
-	server.InitFuncMap()
-	server.AddFuncMap("config", initial.Core.Config.String)
-	server.AddFuncMap("marshalHtml", util.MarshalHTML)
-	server.AddFuncMap("marshalJs", util.MarshalJS)
-	server.AddFuncMap("static", util.Static)
-	server.AddFuncMap("js", util.JS)
-	server.AddFuncMap("formatDate", util.FormatDate)
-	server.AddFuncMap("formatDateTime", util.FormatDateTime)
-	server.AddFuncMap("unixTimeFormatDate", FormatDateTime)
-	server.AddFuncMap("inArray", util.InArray)
-	server.AddFuncMap("multiArray", util.MultiArray)
-	server.AddFuncMap("inMultiArray", util.InMultiArray)
-	server.AddFuncMap("empty", util.Empty)
-	server.AddFuncMap("divide", util.Divide)
-	server.AddFuncMap("add", util.Add)
-	server.AddFuncMap("strReplace", util.StrReplace)
+	// server.InitFuncMap()
+	// server.AddFuncMap("config", initial.Core.Config.String)
+	// server.AddFuncMap("marshalHtml", util.MarshalHTML)
+	// server.AddFuncMap("marshalJs", util.MarshalJS)
+	// server.AddFuncMap("static", util.Static)
+	// server.AddFuncMap("js", util.JS)
+	// server.AddFuncMap("formatDate", util.FormatDate)
+	// server.AddFuncMap("formatDateTime", util.FormatDateTime)
+	// server.AddFuncMap("unixTimeFormatDate", FormatDateTime)
+	// server.AddFuncMap("inArray", util.InArray)
+	// server.AddFuncMap("multiArray", util.MultiArray)
+	// server.AddFuncMap("inMultiArray", util.InMultiArray)
+	// server.AddFuncMap("empty", util.Empty)
+	// server.AddFuncMap("divide", util.Divide)
+	// server.AddFuncMap("add", util.Add)
+	// server.AddFuncMap("strReplace", util.StrReplace)
 
 	// 开发模式
 	if !initial.Core.Config.Bool("DisableDebug", true) {
@@ -82,7 +80,7 @@ func (eng *Engine) NewHttpServer() error {
 		// server.Use(gin.Logger())
 	} else {
 		//加载模板文件
-		t, err := loadTemplate(server.FuncMap, server.GetDelims())
+		t, err := loadTemplate(server.FuncMap)
 		if err != nil {
 			panic(err)
 		}
@@ -101,18 +99,15 @@ func (eng *Engine) NewHttpServer() error {
 	}
 	server.StaticFS("/resource", &staticFS) //配置静态资源文件路由
 	//添加路由
-	pprof.Register(server.Engine)
+	// pprof.Register(server.Engine)
 	// backstage.Route(server.Engine)
 	// mobile.Route(server.Engine)
-	if gin.IsDebugging() {
-		gin.App.Table.Render()
-	}
 	return eng.Serve(server)
 }
 
 // 加载模板文件
-func loadTemplate(funcMap template.FuncMap, r render.Delims) (*template.Template, error) {
-	t := template.New("").Delims(r.Left, r.Right).Funcs(funcMap)
+func loadTemplate(funcMap template.FuncMap) (*template.Template, error) {
+	t := template.New("").Delims("{{", "}}").Funcs(funcMap)
 
 	for _, name := range view.AssetNames() {
 		if !strings.HasSuffix(name, ".html") {

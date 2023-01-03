@@ -21,6 +21,8 @@ var Core *Initial
 
 // New Default returns an Initial instance.
 func New() *Initial {
+	//时区设置
+	time.Local = time.FixedZone("CST", 8*3600)
 	engine := NewInitial()
 	return engine
 }
