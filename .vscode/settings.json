@@ -13,6 +13,10 @@
         "proxymysql",
         "proxyredis",
         "sirupsen",
-        "xgin"
+        "xgin",
+        "xgrpc"
+    ],
+    "cSpell.ignoreWords": [
+        "xhertz"
     ]
 }

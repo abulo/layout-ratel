@@ -13,7 +13,6 @@ import (
 	"github.com/abulo/ratel/v3/server/xgin"
 	"github.com/abulo/ratel/v3/util"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -25,7 +24,7 @@ func FormatDateTime(str interface{}) string {
 	return util.Date("Y-m-d H:i:s", str.(primitive.DateTime).Time())
 }
 
-func (eng *Engine) NewHttpServer() error {
+func (eng *Engine) NewGinServer() error {
 	configAdmin := initial.Core.Config.Get("server.admin")
 	cfg := configAdmin.(map[string]interface{})
 	//先获取这个服务是否是需要开启
@@ -42,11 +41,11 @@ func (eng *Engine) NewHttpServer() error {
 	client.DisableSlowQuery = cast.ToBool(cfg["DisableSlowQuery"])
 	client.ServiceAddress = cast.ToString(cfg["ServiceAddress"])
 	client.SlowQueryThresholdInMilli = cast.ToInt64(cfg["SlowQueryThresholdInMilli"])
-	if !initial.Core.Config.Bool("DisableDebug", true) {
-		client.Mode = gin.DebugMode
-	} else {
-		client.Mode = gin.ReleaseMode
-	}
+	// if !initial.Core.Config.Bool("DisableDebug", true) {
+	// 	client.Mode = gin.DebugMode
+	// } else {
+	// 	client.Mode = gin.ReleaseMode
+	// }
 	server := client.Build()
 
 	server.SetTrustedProxies([]string{"0.0.0.0/0"})

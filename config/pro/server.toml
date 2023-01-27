@@ -5,7 +5,7 @@
         # 监听 IP,如果是注册发现服务，需要填写内网 IP,如果是单机模式，则填写 127.0.0.1
         Host = "127.0.0.1"
         # 监听端口
-        Port = 20000
+        Port = 10888
         # 注册发现服务中的角色名称
         Deployment = "golang"
         # 关闭指标采集
@@ -15,7 +15,7 @@
         # 关闭慢日志查询
         DisableSlowQuery = true
         # 同监听一样
-        ServiceAddress = "172.18.1.5:20000"
+        ServiceAddress = "172.18.1.5:10888"
         # 慢日志
         SlowQueryThresholdInMilli = 10000
     [server.api]
@@ -24,7 +24,24 @@
         # 监听 IP,如果是注册发现服务，需要填写内网 IP,如果是单机模式，则填写 127.0.0.1
         Host = "127.0.0.1"
         # 监听端口
-        Port = 21000
+        Port = 10999
+        # 注册发现服务中的角色名称
+        Deployment = "golang"
+        # 关闭指标采集
+        DisableMetric = false
+        # 关闭链路追踪
+        DisableTrace = false
+        # 同监听一样
+        ServiceAddress = "172.18.1.5:10999"
+        # 慢日志
+        SlowQueryThresholdInMilli = 10000
+    [server.grpc]
+        # 是否开启
+        Disable = false
+        # 监听 IP,如果是注册发现服务，需要填写内网 IP,如果是单机模式，则填写 127.0.0.1
+        Host = "127.0.0.1"
+        # 监听端口
+        Port = 11000
         # 注册发现服务中的角色名称
         Deployment = "golang"
         # 关闭指标采集
@@ -34,7 +51,7 @@
         # 关闭慢日志查询
         DisableSlowQuery = false
         # 同监听一样
-        ServiceAddress = "172.18.1.5:21000"
+        ServiceAddress = "172.18.1.5:11000"
         # 慢日志
         SlowQueryThresholdInMilli = 10000
     # [server.monitor]

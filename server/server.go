@@ -10,7 +10,7 @@ type Engine struct {
 	app.Application
 }
 
-func NewHttpEngine() *Engine {
+func NewGinEngine() *Engine {
 	eng := &Engine{}
 
 	//加载计划任务
@@ -18,8 +18,9 @@ func NewHttpEngine() *Engine {
 	// 注册函数
 	// eng.RegisterHooks(hooks.Stage_AfterLoadConfig, eng.BeforeInit)
 	if err := eng.Startup(
-		eng.NewHttpServer,
-		// eng.ApiServer,
+		eng.NewGinServer,
+		eng.NewHertzServer,
+		eng.NewGrpcServer,
 	); err != nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"err": err,

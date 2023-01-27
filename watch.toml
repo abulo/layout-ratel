@@ -1,6 +1,0 @@
-#忽略文件
-ignorefile = [".doc",".md",".tmp",".gitignore",".go~",".html",".c",".cpp",".h",".toml","*.go"]
-#忽略文件夹
-ignoredir = ["doc","vendor","bin","test",".git","docker","static","view","release","resource"]
-#gobin
-build = "bin"
