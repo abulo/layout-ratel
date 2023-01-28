@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/abulo/layout/initial"
+	"github.com/abulo/layout/service"
 	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/abulo/ratel/v3/server/xgrpc"
 	"github.com/spf13/cast"
@@ -24,7 +25,8 @@ func (eng *Engine) NewGrpcServer() error {
 	client.ServiceAddress = cast.ToString(cfg["ServiceAddress"])
 	client.SlowQueryThresholdInMilli = cast.ToInt64(cfg["SlowQueryThresholdInMilli"])
 	res := client.MustBuild()
-
+	// 注册服务
+	service.Registry(res)
 	//注册服务
 	return eng.Serve(res)
 }
