@@ -1,18 +1,10 @@
 package server
 
 import (
-	"html/template"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"github.com/abulo/layout/initial"
-	"github.com/abulo/layout/initial/asset"
-	"github.com/abulo/layout/initial/view"
 	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/abulo/ratel/v3/server/xgin"
 	"github.com/abulo/ratel/v3/util"
-	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -68,35 +60,35 @@ func (eng *Engine) NewGinServer() error {
 	// server.AddFuncMap("add", util.Add)
 	// server.AddFuncMap("strReplace", util.StrReplace)
 
-	// 开发模式
-	if !initial.Core.Config.Bool("DisableDebug", true) {
-		//模板
-		t, err := loadGlobTemplate(initial.Core.Path + "/view")
-		if err != nil {
-			panic(err)
-		}
-		server.LoadHTMLFiles(t...)
-		// server.Use(gin.Logger())
-	} else {
-		//加载模板文件
-		t, err := loadTemplate(server.FuncMap)
-		if err != nil {
-			panic(err)
-		}
-		server.SetHTMLTemplate(t)
-	}
-	//静态文件目录
-	server.Static("/static", initial.Core.Path+"/static")
+	// // 开发模式
+	// if !initial.Core.Config.Bool("DisableDebug", true) {
+	// 	//模板
+	// 	t, err := loadGlobTemplate(initial.Core.Path + "/view")
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	server.LoadHTMLFiles(t...)
+	// 	// server.Use(gin.Logger())
+	// } else {
+	// 	//加载模板文件
+	// 	t, err := loadTemplate(server.FuncMap)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	server.SetHTMLTemplate(t)
+	// }
+	// //静态文件目录
+	// server.Static("/static", initial.Core.Path+"/static")
 
-	// 通过 go-bindata-assetfs 提供的函数将静态资源
-	staticFS := assetfs.AssetFS{
-		Asset:    asset.Asset,
-		AssetDir: asset.AssetDir,
-		// AssetInfo: asset.AssetInfo,
-		Prefix:   "resource", // 访问路由index.html => 指向文件 resource/index.html
-		Fallback: "index.html",
-	}
-	server.StaticFS("/resource", &staticFS) //配置静态资源文件路由
+	// // 通过 go-bindata-assetfs 提供的函数将静态资源
+	// staticFS := assetfs.AssetFS{
+	// 	Asset:    asset.Asset,
+	// 	AssetDir: asset.AssetDir,
+	// 	// AssetInfo: asset.AssetInfo,
+	// 	Prefix:   "resource", // 访问路由index.html => 指向文件 resource/index.html
+	// 	Fallback: "index.html",
+	// }
+	// server.StaticFS("/resource", &staticFS) //配置静态资源文件路由
 	//添加路由
 	// pprof.Register(server.Engine)
 	// backstage.Route(server.Engine)
@@ -104,34 +96,34 @@ func (eng *Engine) NewGinServer() error {
 	return eng.Serve(server)
 }
 
-// 加载模板文件
-func loadTemplate(funcMap template.FuncMap) (*template.Template, error) {
-	t := template.New("").Delims("{{", "}}").Funcs(funcMap)
+// // 加载模板文件
+// func loadTemplate(funcMap template.FuncMap) (*template.Template, error) {
+// 	t := template.New("").Delims("{{", "}}").Funcs(funcMap)
 
-	for _, name := range view.AssetNames() {
-		if !strings.HasSuffix(name, ".html") {
-			continue
-		}
-		asset, err := view.Asset(name)
-		if err != nil {
-			continue
-		}
-		name := strings.Replace(name, "view/", "", 1)
-		t, err = t.New(name).Parse(string(asset))
-		if err != nil {
-			return nil, err
-		}
-	}
-	return t, nil
-}
+// 	for _, name := range view.AssetNames() {
+// 		if !strings.HasSuffix(name, ".html") {
+// 			continue
+// 		}
+// 		asset, err := view.Asset(name)
+// 		if err != nil {
+// 			continue
+// 		}
+// 		name := strings.Replace(name, "view/", "", 1)
+// 		t, err = t.New(name).Parse(string(asset))
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 	}
+// 	return t, nil
+// }
 
-func loadGlobTemplate(dir string) ([]string, error) {
-	fileList := []string{}
-	err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
-		if !f.IsDir() {
-			fileList = append(fileList, filepath.FromSlash(path))
-		}
-		return nil
-	})
-	return fileList, err
-}
+// func loadGlobTemplate(dir string) ([]string, error) {
+// 	fileList := []string{}
+// 	err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
+// 		if !f.IsDir() {
+// 			fileList = append(fileList, filepath.FromSlash(path))
+// 		}
+// 		return nil
+// 	})
+// 	return fileList, err
+// }

@@ -3,7 +3,7 @@
         Username = "zeus"
         Password = "zeus"
         Addr = ["172.18.1.10:9000"]
-        Database = "xmt"
+        Database = "zeus"
         DialTimeout = "3s"
         OpenStrategy = "random"
         Compress = true

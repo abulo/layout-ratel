@@ -25,8 +25,7 @@ func (eng *Engine) NewGrpcServer() error {
 	client.ServiceAddress = cast.ToString(cfg["ServiceAddress"])
 	client.SlowQueryThresholdInMilli = cast.ToInt64(cfg["SlowQueryThresholdInMilli"])
 	res := client.MustBuild()
-	// 注册服务
-	service.Registry(res)
 	//注册服务
+	service.Registry(res)
 	return eng.Serve(res)
 }

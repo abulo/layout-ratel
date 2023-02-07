@@ -6,8 +6,9 @@ import (
 
 // Registry 注册服务
 func Registry(server *xgrpc.Server) {
-	// // 系统访问记录
-	// logger.RegisterLoginLogServiceServer(server.Server, &srvLogger.LoginLogServiceServer{
+	// 系统访问记录
+	// logger.RegisterLoginLogServiceServer(server.Server, &logger.SrvLoginLogServiceServer{
 	// 	Server: server,
 	// })
+
 }

@@ -4,7 +4,7 @@
     Username = "root"
     Password = "mysql"
     Charset = "utf8mb4"
-    Database = "safety"
+    Database = "xiaobao"
     #TimeZone 数据库时区
     TimeZone = "PRC"
     # MaxOpenConns 连接池最多同时打开的连接数
@@ -21,16 +21,16 @@
     DisableTrace = false
 [watch]
     # 在 go.mod 发生变化自动运行 go mod tidy
-    AutoTidy = false
+    AutoTidy = true
     # 为 go build 最后的文件参数，可以为空，表示当前目录。
     # MainFiles = "./ratel/tookit"
-    MainFiles = ["./"]
+    MainFiles = ["./cmd/hertz","./cmd/grpc"]
     # 指定可执行文件输出的文件路径
     # 为空表示默认值，若不带路径信息，会附加在 Dirs 的第一个路径上；
     # windows 系统无须指定 .exe 扩展名，会自行添加。
     # 如果带路径信息，则会使用该文件所在目录作为工作目录。
     # OutputName = "./ratel/tookit/tookit"
-    OutputName = ["./tookit"]
+    OutputName = ["./bin/hertz","./bin/grpc"]
     # 指定监视的文件扩展名
     # 为空表示不监视任何文件，如果指定了 *，表示所有文件类型，包括没有扩展名的文件。
     Exts = ["*"]

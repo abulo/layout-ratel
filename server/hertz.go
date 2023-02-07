@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/abulo/layout/initial"
+	"github.com/abulo/layout/internal/routes"
 	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/abulo/ratel/v3/server/xhertz"
 	"github.com/spf13/cast"
@@ -26,5 +27,6 @@ func (eng *Engine) NewHertzServer() error {
 	client.SlowQueryThresholdInMilli = cast.ToInt64(cfg["SlowQueryThresholdInMilli"])
 
 	res := client.Build()
+	routes.InitRoute(res)
 	return eng.Serve(res)
 }
