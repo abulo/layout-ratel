@@ -3,7 +3,7 @@ module github.com/abulo/layout
 go 1.20
 
 require (
-	github.com/abulo/ratel/v3 v3.3.8
+	github.com/abulo/ratel/v3 v3.3.9
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cast v1.5.0
@@ -19,10 +19,10 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
 	github.com/bytedance/gopkg v0.0.0-20220413063733-65bf48ffb3a7 // indirect
-	github.com/bytedance/sonic v1.8.0 // indirect
+	github.com/bytedance/sonic v1.8.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/cloudwego/hertz v0.5.2 // indirect
+	github.com/cloudwego/hertz v0.6.0 // indirect
 	github.com/cloudwego/netpoll v0.3.1 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
@@ -43,7 +43,7 @@ require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gookit/color v1.5.2 // indirect
-	github.com/gookit/goutil v0.6.5 // indirect
+	github.com/gookit/goutil v0.6.6 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/henrylee2cn/ameda v1.4.10 // indirect
