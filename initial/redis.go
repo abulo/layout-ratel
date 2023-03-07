@@ -12,27 +12,41 @@ func (initial *Initial) InitRedis() *Initial {
 	list := configs.(map[string]interface{})
 	links := make(map[string]*redis.Client)
 	for node, nodeConfig := range list {
-		opt := &redis.Config{}
+		opts := make([]redis.Option, 0)
 		res := nodeConfig.(map[string]interface{})
-		if KeyPrefix := cast.ToString(res["KeyPrefix"]); KeyPrefix != "" {
-			opt.KeyPrefix = KeyPrefix
+		if ClientType := cast.ToString(res["ClientType"]); ClientType != "" {
+			opts = append(opts, redis.WithClientType(ClientType))
+		}
+		if Hosts := cast.ToStringSlice(res["Hosts"]); len(Hosts) > 0 {
+			opts = append(opts, redis.WithHosts(Hosts))
 		}
 		if Password := cast.ToString(res["Password"]); Password != "" {
-			opt.Password = Password
+			opts = append(opts, redis.WithPassword(Password))
 		}
 		if Database := cast.ToInt(res["Database"]); Database > 0 {
-			opt.Database = cast.ToInt(Database)
+			opts = append(opts, redis.WithDatabase(Database))
 		}
 		if PoolSize := cast.ToInt(res["PoolSize"]); PoolSize > 0 {
-			opt.PoolSize = cast.ToInt(PoolSize)
+			opts = append(opts, redis.WithPoolSize(PoolSize))
 		}
-		opt.Type = cast.ToBool(res["Type"])
-		if Hosts := cast.ToStringSlice(res["Hosts"]); len(Hosts) > 0 {
-			opt.Hosts = Hosts
+		if KeyPrefix := cast.ToString(res["KeyPrefix"]); KeyPrefix != "" {
+			opts = append(opts, redis.WithKeyPrefix(KeyPrefix))
 		}
-		opt.DisableMetric = cast.ToBool(res["DisableMetric"])
-		opt.DisableTrace = cast.ToBool(res["DisableTrace"])
-		conn := redis.New(opt)
+		opts = append(opts, redis.WithDisableMetric(cast.ToBool(res["DisableMetric"])))
+		opts = append(opts, redis.WithDisableTrace(cast.ToBool(res["DisableTrace"])))
+		if Addr := cast.ToString(res["Addr"]); Addr != "" {
+			opts = append(opts, redis.WithAddr(Addr))
+		}
+		if Addrs := cast.ToStringMapString(res["Addrs"]); len(Addrs) > 0 {
+			opts = append(opts, redis.WithAddrs(Addrs))
+		}
+		if MasterName := cast.ToString(res["MasterName"]); MasterName != "" {
+			opts = append(opts, redis.WithMasterName(MasterName))
+		}
+		conn, err := redis.NewRedisClient(opts...)
+		if err != nil {
+			panic(err)
+		}
 		links["redis."+node] = conn
 	}
 	proxyConfigs := initial.Config.Get("proxyredis")
