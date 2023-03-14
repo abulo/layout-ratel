@@ -14,25 +14,28 @@ func (initial *Initial) InitMongoDB() *Initial {
 	list := configs.(map[string]interface{})
 	links := make(map[string]*mongodb.MongoDB)
 	for node, nodeConfig := range list {
-		opt := &mongodb.Config{}
+		opts := make([]mongodb.Option, 0)
 		res := nodeConfig.(map[string]interface{})
-		if URI := cast.ToString(res["URI"]); URI != "" {
-			opt.URI = URI
+		uri := cast.ToString(res["URI"])
+		if uri == "" {
+			panic("mongodb uri is empty")
 		}
 		if MaxConnIdleTime := cast.ToInt64(res["MaxConnIdleTime"]); MaxConnIdleTime > 0 {
-			opt.MaxConnIdleTime = cast.ToDuration(MaxConnIdleTime) * time.Minute
+			opts = append(opts, mongodb.WithMaxConnIdleTime(cast.ToDuration(MaxConnIdleTime)*time.Minute))
 		}
 		if MaxPoolSize := cast.ToInt64(res["MaxPoolSize"]); MaxPoolSize > 0 {
-			opt.MaxPoolSize = cast.ToUint64(MaxPoolSize)
+			opts = append(opts, mongodb.WithMaxPoolSize(cast.ToUint64(MaxPoolSize)))
 		}
 		if MinPoolSize := cast.ToInt64(res["MinPoolSize"]); MinPoolSize > 0 {
-			opt.MinPoolSize = cast.ToUint64(MinPoolSize)
+			opts = append(opts, mongodb.WithMinPoolSize(cast.ToUint64(MinPoolSize)))
 		}
-
-		opt.DisableMetric = cast.ToBool(res["DisableMetric"])
-		opt.DisableTrace = cast.ToBool(res["DisableTrace"])
-		conn := mongodb.NewClient(opt)
-		links["mongodb."+node] = conn
+		client, err := mongodb.NewMongoDBClient(uri, opts...)
+		if err != nil {
+			panic(err)
+		}
+		client.SetDisableMetric(cast.ToBool(res["DisableMetric"]))
+		client.SetDisableTrace(cast.ToBool(res["DisableTrace"]))
+		links["mongodb."+node] = client
 	}
 	proxyConfigs := initial.Config.Get("proxymongodb")
 	proxyRes := proxyConfigs.([]map[string]interface{})

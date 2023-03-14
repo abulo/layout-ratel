@@ -28,7 +28,6 @@ func init() {
 	global.InitMongoDB()
 	global.InitRedis()
 	global.InitMysql()
-	global.InitClickHouse()
 	global.InitRegistry()
 	global.InitTrace()
 }

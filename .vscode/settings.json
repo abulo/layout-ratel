@@ -9,6 +9,7 @@
         "fsnotify",
         "logrus",
         "proxyclickhouse",
+        "proxydb",
         "proxymongodb",
         "proxymysql",
         "proxyredis",

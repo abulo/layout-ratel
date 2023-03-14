@@ -1,5 +1,5 @@
-[mysql]
-    [mysql.host1]
+[db]
+    [db.host1]
         Host = "172.18.1.3"
         Port = "3306"
         Username = "root"
@@ -18,9 +18,27 @@
         DisableMetric = false
         # 关闭链路追踪
         DisableTrace = false
-        #TimeZone 数据库时区
+        # 数据库时区
         TimeZone = "PRC"
-[[proxymysql]]
+        # 驱动名称
+        DriverName = "mysql"
+        # 关闭预处理
+        DisablePrepare = false
+        # 是否解析时间
+        ParseTime = false
+        # clickhouse ip:port  clickhouse
+        Addr = []
+        # clickhouse 链接超时时间
+        DialTimeout = "200ms"
+        # clickhouse random/in_order (default random)
+        OpenStrategy = "random"
+        # clickhouse enable lz4 compression
+        Compress = false
+        # clickhouse 执行超时时间
+        MaxExecutionTime = "200ms"
+        # clickhouse 关闭 debug模式
+        DisableDebug = false
+[[proxydb]]
 Name = "mysql"
-Master = ["mysql.host1"]
-Slave = ["mysql.host1"]
+Master = ["db.host1"]
+Slave = ["db.host1"]
