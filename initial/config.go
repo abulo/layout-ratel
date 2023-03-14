@@ -9,7 +9,7 @@ import (
 
 // GetEnvironment ...
 func (initial *Initial) GetEnvironment(dir, key string) string {
-	envConfig := config.NewWithOptions("go-ratel/v3-evn", config.Readonly, config.EnableCache)
+	envConfig := config.NewWithOptions("go-ratel-evn", config.Readonly, config.EnableCache)
 	driver := toml.Driver
 	envConfig.AddDriver(driver)
 	if err := envConfig.LoadDir(dir, driver.Name()); err != nil {
@@ -20,7 +20,7 @@ func (initial *Initial) GetEnvironment(dir, key string) string {
 
 // InitConfig set app config toml files
 func (initial *Initial) InitConfig(dirs ...string) *Initial {
-	Config := config.NewWithOptions("go-ratel/v3", config.Readonly, config.EnableCache)
+	Config := config.NewWithOptions("go-ratel", config.Readonly, config.EnableCache)
 	driver := toml.Driver
 	Config.AddDriver(driver)
 	for _, dir := range dirs {

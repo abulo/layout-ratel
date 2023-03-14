@@ -3,7 +3,7 @@ module github.com/abulo/layout
 go 1.20
 
 require (
-	github.com/abulo/ratel/v3 v3.4.4
+	github.com/abulo/ratel/v3 v3.4.9
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cast v1.5.0
