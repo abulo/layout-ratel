@@ -3,9 +3,7 @@ package code
 // 1000～1999 区间表示系统错误
 // 2000～2999 区间表示用户错误
 var (
-	Success = int64(0) // 执行成功
-	Fail    = int64(1) // 执行失败
-	// 1000～1999 区间表示系统错误
+	Success              = int64(200)  // 执行成功
 	SystemError          = int64(1001) // 系统错误
 	ResourceNotAvailable = int64(1002) // 服务端资源不可用
 	RemoteServiceError   = int64(1003) // 远程服务出错
@@ -14,12 +12,11 @@ var (
 	Timeout              = int64(1006) // 任务超时
 	RPCError             = int64(1007) // RPC错误
 	BadRequest           = int64(1008) // 非法请求
+	SqlError             = int64(2001) // SQL错误
 
 	//状态码对应的信息
 	statusText = map[int64]string{
-		Success: "成功",
-		Fail:    "失败",
-		// 1000～1999 区间表示系统错误
+		Success:              "成功",
 		SystemError:          "系统错误",
 		ResourceNotAvailable: "服务端资源不可用",
 		RemoteServiceError:   "远程服务出错",
@@ -28,6 +25,7 @@ var (
 		Timeout:              "任务超时",
 		RPCError:             "RPC错误",
 		BadRequest:           "非法请求",
+		SqlError:             "SQL错误",
 	}
 )
 

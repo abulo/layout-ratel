@@ -25,7 +25,7 @@
         # 关闭预处理
         DisablePrepare = false
         # 是否解析时间
-        ParseTime = false
+        ParseTime = true
         # clickhouse ip:port  clickhouse
         Addr = []
         # clickhouse 链接超时时间
