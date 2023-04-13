@@ -1,5 +1,7 @@
 package code
 
+import "google.golang.org/grpc/codes"
+
 // 1000～1999 区间表示系统错误
 // 2000～2999 区间表示用户错误
 var (
@@ -30,5 +32,16 @@ var (
 )
 
 func StatusText(code int64) string {
-	return statusText[code]
+	if val, ok := statusText[code]; ok {
+		return val
+	}
+	return "未知错误"
+}
+
+func ConvertToGrpc(code int64) codes.Code {
+	return codes.Code(code)
+}
+
+func ConvertToHttp(code codes.Code) int64 {
+	return int64(code)
 }
