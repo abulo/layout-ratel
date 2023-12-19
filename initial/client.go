@@ -1,7 +1,6 @@
 package initial
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/abulo/ratel/v3/client"
@@ -37,11 +36,7 @@ func (initial *Initial) InitRegistry() *Initial {
 		if CaCert := cast.ToString(res["CaCert"]); CaCert != "" {
 			config.SetCaCert(CaCert)
 		}
-		if BasicAuth := cast.ToBool(res["BasicAuth"]); BasicAuth {
-			config.SetBasicAuth(true)
-		} else {
-			config.SetBasicAuth(false)
-		}
+		config.SetBasicAuth(cast.ToBool(res["BasicAuth"]))
 		if UserName := cast.ToString(res["UserName"]); UserName != "" {
 			config.SetUserName(UserName)
 		}
@@ -51,11 +46,7 @@ func (initial *Initial) InitRegistry() *Initial {
 		if ConnectTimeout := cast.ToString(res["ConnectTimeout"]); ConnectTimeout != "" {
 			config.SetConnectTimeout(util.Duration(ConnectTimeout))
 		}
-		if Secure := cast.ToBool(res["Secure"]); Secure {
-			config.SetSecure(true)
-		} else {
-			config.SetSecure(false)
-		}
+		config.SetSecure(cast.ToBool(res["Secure"]))
 		if AutoSyncInterval := cast.ToString(res["AutoSyncInterval"]); AutoSyncInterval != "" {
 			config.SetAutoSyncInterval(util.Duration(AutoSyncInterval))
 		}
@@ -94,55 +85,23 @@ func (initial *Initial) InitGrpc() *Initial {
 		if Address := cast.ToString(res["Address"]); Address != "" {
 			config.SetAddress(Address)
 		}
-		if Block := cast.ToBool(res["Block"]); Block {
-			config.SetBlock(true)
-		} else {
-			config.SetBlock(false)
-		}
+		config.SetBlock(cast.ToBool(res["Block"]))
 		if DialTimeout := cast.ToString(res["DialTimeout"]); DialTimeout != "" {
 			config.SetDialTimeout(util.Duration(DialTimeout))
 		}
 		if ReadTimeout := cast.ToString(res["ReadTimeout"]); ReadTimeout != "" {
 			config.SetReadTimeout(util.Duration(ReadTimeout))
 		}
-		if Direct := cast.ToBool(res["Direct"]); Direct {
-			config.SetDirect(true)
-		} else {
-			config.SetDirect(false)
-		}
+		config.SetDirect(cast.ToBool(res["Direct"]))
 		if SlowThreshold := cast.ToString(res["SlowThreshold"]); SlowThreshold != "" {
 			config.SetSlowThreshold(util.Duration(SlowThreshold))
 		}
-		if Debug := cast.ToBool(res["Debug"]); Debug {
-			config.SetDebug(true)
-		} else {
-			config.SetDebug(false)
-		}
-		if DisableTraceInterceptor := cast.ToBool(res["DisableTraceInterceptor"]); DisableTraceInterceptor {
-			config.SetDisableTraceInterceptor(true)
-		} else {
-			config.SetDisableTraceInterceptor(false)
-		}
-		if DisableAidInterceptor := cast.ToBool(res["DisableAidInterceptor"]); DisableAidInterceptor {
-			config.SetDisableAidInterceptor(true)
-		} else {
-			config.SetDisableAidInterceptor(false)
-		}
-		if DisableTimeoutInterceptor := cast.ToBool(res["DisableTimeoutInterceptor"]); DisableTimeoutInterceptor {
-			config.SetDisableTimeoutInterceptor(true)
-		} else {
-			config.SetDisableTimeoutInterceptor(false)
-		}
-		if DisableMetricInterceptor := cast.ToBool(res["DisableMetricInterceptor"]); DisableMetricInterceptor {
-			config.SetDisableMetricInterceptor(true)
-		} else {
-			config.SetDisableMetricInterceptor(false)
-		}
-		if DisableAccessInterceptor := cast.ToBool(res["DisableAccessInterceptor"]); DisableAccessInterceptor {
-			config.SetDisableAccessInterceptor(true)
-		} else {
-			config.SetDisableAccessInterceptor(false)
-		}
+		config.SetDebug(cast.ToBool(res["Debug"]))
+		config.SetDisableTraceInterceptor(cast.ToBool(res["DisableTraceInterceptor"]))
+		config.SetDisableAidInterceptor(cast.ToBool(res["DisableAidInterceptor"]))
+		config.SetDisableTimeoutInterceptor(cast.ToBool(res["DisableTimeoutInterceptor"]))
+		config.SetDisableMetricInterceptor(cast.ToBool(res["DisableMetricInterceptor"]))
+		config.SetDisableAccessInterceptor(cast.ToBool(res["DisableAccessInterceptor"]))
 		if AccessInterceptorLevel := cast.ToString(res["AccessInterceptorLevel"]); AccessInterceptorLevel != "" {
 			config.SetAccessInterceptorLevel(AccessInterceptorLevel)
 		}
@@ -154,7 +113,6 @@ func (initial *Initial) InitGrpc() *Initial {
 		if Etcd := cast.ToString(res["Etcd"]); Etcd != "" {
 			config.SetEtcd(initial.Client.LoadEtcd(Etcd))
 		}
-
 		config.BalancerName = balancer.NameSmoothWeightRoundRobin
 		config.BalancerName = p2c.Name
 		links["grpc."+node] = config
@@ -168,7 +126,6 @@ func (initial *Initial) InitGrpc() *Initial {
 			proxyPool.Store(links[node])
 		}
 		if Name := cast.ToString(val["Name"]); Name != "" {
-			fmt.Println(Name, "nnnnnnnn")
 			initial.Client.StoreGrpc(Name, proxyPool)
 		}
 	}

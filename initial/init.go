@@ -20,6 +20,7 @@ type Initial struct {
 	Client         *client.Proxy
 	GrpcClient     *grpc.ClientConn
 	RegistryClient registry.Registry
+	Local          *time.Location
 }
 
 // Core 系统
@@ -30,6 +31,7 @@ func New() *Initial {
 	//时区设置
 	time.Local = time.FixedZone("CST", 8*3600)
 	engine := NewInitial()
+	engine.Local = time.Local
 	return engine
 }
 

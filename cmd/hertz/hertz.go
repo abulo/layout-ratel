@@ -26,6 +26,7 @@ func init() {
 	//加载配置文件
 	global.InitConfig(dirs...)
 	global.InitMongoDB()
+	global.InitRedis()
 	global.InitRegistry()
 	global.InitGrpc()
 	global.InitTrace()
@@ -42,7 +43,6 @@ func main() {
 	logger.Logger.SetReportCaller(true)
 	if initial.Core.Config.Bool("DisableDebug", true) {
 		logger.Logger.SetOutput(io.Discard)
-
 	} else {
 		logger.Logger.SetOutput(os.Stdout)
 	}
@@ -56,5 +56,4 @@ func main() {
 	// ctx := context.Background()
 	// client := slogger.NewLoginLogServiceClient(initial.Core.Client.LoadGrpc("grpc").MustSingleton())
 	// res, err := client.LoginLogList(ctx, &slogger.LoginLogListRequest{})
-	// fmt.Println(res, err)
 }

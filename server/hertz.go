@@ -9,11 +9,11 @@ import (
 )
 
 func (eng *Engine) NewHertzServer() error {
-	configAdmin := initial.Core.Config.Get("server.admin")
-	cfg := configAdmin.(map[string]interface{})
+	configApi := initial.Core.Config.Get("server.api")
+	cfg := configApi.(map[string]interface{})
 	//先获取这个服务是否是需要开启
 	if disable := cast.ToBool(cfg["Disable"]); disable {
-		logger.Logger.Error("server.admin is disabled")
+		logger.Logger.Error("server.api is disabled")
 		return nil
 	}
 	client := xhertz.New()

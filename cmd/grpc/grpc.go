@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/abulo/layout/crond"
 	"github.com/abulo/layout/initial"
 	"github.com/abulo/layout/server"
 	"github.com/abulo/ratel/v3/core/env"
@@ -27,7 +28,7 @@ func init() {
 	global.InitConfig(dirs...)
 	global.InitMongoDB()
 	global.InitRedis()
-	global.InitMysql()
+	global.InitSql()
 	global.InitRegistry()
 	global.InitTrace()
 }
@@ -56,6 +57,9 @@ func main() {
 	eng := server.NewGrpcEngine()
 	//注册 etcd
 	eng.SetRegistry(registryHandle)
+	//计划任务
+	stop := crond.CronJob()
+	defer stop()
 	if err := eng.Run(); err != nil {
 		logger.Logger.Panic(err.Error())
 	}

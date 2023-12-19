@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cast"
 )
 
-// InitMysql load mysql && returns an mysql instance.
-func (initial *Initial) InitMysql() *Initial {
+// InitSql load mysql && returns an mysql instance.
+func (initial *Initial) InitSql() *Initial {
 	configs := initial.Config.Get("db")
 	list := configs.(map[string]interface{})
 	links := make(map[string]sql.SqlConn)
