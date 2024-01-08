@@ -1,12 +1,25 @@
 package server
 
 import (
+	"context"
+
 	"github.com/abulo/layout/initial"
 	"github.com/abulo/layout/internal/routes"
 	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/abulo/ratel/v3/server/xhertz"
+	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/spf13/cast"
 )
+
+func hertzPanicRecoveryHandler(ctx context.Context, newCtx *app.RequestContext, err interface{}, stack []byte) {
+	logger.Logger.Error("startup")
+	hlog.SystemLogger().CtxErrorf(ctx, "[Recovery] err=%v\nstack=%s", err, stack)
+	hlog.SystemLogger().Infof("Client: %s", newCtx.Request.Header.UserAgent())
+	newCtx.AbortWithStatus(consts.StatusInternalServerError)
+}
 
 func (eng *Engine) NewHertzServer() error {
 	configApi := initial.Core.Config.Get("server.api")
@@ -27,6 +40,7 @@ func (eng *Engine) NewHertzServer() error {
 	client.SlowQueryThresholdInMilli = cast.ToInt64(cfg["SlowQueryThresholdInMilli"])
 
 	res := client.Build()
+	res.Use(recovery.Recovery(recovery.WithRecoveryHandler(hertzPanicRecoveryHandler)))
 	routes.InitRoute(res)
 	return eng.Serve(res)
 }
