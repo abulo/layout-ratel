@@ -32,7 +32,7 @@ func (eng *Engine) NewGinServer() error {
 	client.DisableTrace = cast.ToBool(cfg["DisableTrace"])
 	client.DisableSlowQuery = cast.ToBool(cfg["DisableSlowQuery"])
 	client.ServiceAddress = cast.ToString(cfg["ServiceAddress"])
-	client.SlowQueryThresholdInMilli = cast.ToInt64(cfg["SlowQueryThresholdInMilli"])
+	client.SlowQueryThresholdInMill = cast.ToInt64(cfg["SlowQueryThresholdInMill"])
 	// if !initial.Core.Config.Bool("DisableDebug", true) {
 	// 	client.Mode = gin.DebugMode
 	// } else {

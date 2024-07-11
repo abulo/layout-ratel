@@ -21,9 +21,14 @@ var (
 	TokenExpiredError     = int64(1013) // Token 已经过期
 	TokenNotValidYetError = int64(1014) // Token 未激活
 	TokenMalformedError   = int64(1015) // Token 错误
+	NotFound              = int64(1016) // 未找到
+	LoginFail             = int64(1017) // 登录失败
 	SqlError              = int64(2001) // SQL错误
 	RedisError            = int64(2002) // Redis错误
 	UnavailableError      = int64(2003) // 数据不可用
+	NoPermission          = int64(2004) // 无权限
+	EncryptError          = int64(2005) // 加密错误
+	DecryptError          = int64(2006) // 解密错误
 
 	//状态码对应的信息
 	statusText = map[int64]string{
@@ -45,7 +50,12 @@ var (
 		TokenExpiredError:     "Token已经过期",
 		TokenNotValidYetError: "Token未激活",
 		TokenMalformedError:   "Token错误",
+		NotFound:              "未找到",
+		LoginFail:             "登录失败",
 		UnavailableError:      "数据不可用",
+		NoPermission:          "无权限",
+		EncryptError:          "加密错误",
+		DecryptError:          "解密错误",
 	}
 )
 

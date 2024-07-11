@@ -1,6 +1,6 @@
 [cookie]
     #每一个应用独有标识
-    appKey = "xmt"
+    appKey = "apollo"
     #过期时间
     expires=180000
     #路径

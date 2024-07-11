@@ -32,7 +32,7 @@ func (eng *Engine) NewGrpcServer() error {
 	client.DisableMetric = cast.ToBool(cfg["DisableMetric"])
 	client.DisableTrace = cast.ToBool(cfg["DisableTrace"])
 	client.ServiceAddress = cast.ToString(cfg["ServiceAddress"])
-	client.SlowQueryThresholdInMilli = cast.ToInt64(cfg["SlowQueryThresholdInMilli"])
+	client.SlowQueryThresholdInMill = cast.ToInt64(cfg["SlowQueryThresholdInMill"])
 
 	client.WithServerOption(
 		grpc.KeepaliveEnforcementPolicy(

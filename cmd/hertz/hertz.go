@@ -7,6 +7,7 @@ import (
 	"github.com/abulo/layout/initial"
 	"github.com/abulo/layout/server"
 	"github.com/abulo/ratel/v3/client/grpc/resolver"
+	"github.com/abulo/ratel/v3/core/env"
 	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/abulo/ratel/v3/core/logger/mongo"
 	"github.com/abulo/ratel/v3/util"
@@ -30,11 +31,21 @@ func init() {
 	global.InitRegistry()
 	global.InitGrpc()
 	global.InitTrace()
+	global.InitRate()
 }
 
+var BuildVersion string // 编译版本
+var BuildTime string    // 编译时间
 // 程序主入口
 func main() {
-
+	env.SetName("ApolloHertz")
+	env.SetAppID("1")
+	env.SetAppRegion("sichuan")
+	env.SetAppZone("chengdu")
+	env.SetAppMode("product")
+	env.SetAppHost("golang")
+	env.SetBuildTime(BuildTime)
+	env.SetBuildVersion(BuildVersion)
 	mgClient := initial.Core.Store.LoadMongoDB("mongodb")
 	loggerHook := mongo.DefaultWithURL(mgClient)
 	defer loggerHook.Flush()
