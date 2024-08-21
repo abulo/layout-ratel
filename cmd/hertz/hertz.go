@@ -32,6 +32,7 @@ func init() {
 	global.InitGrpc()
 	global.InitTrace()
 	global.InitRate()
+	global.InitPool(10000)
 }
 
 var BuildVersion string // 编译版本

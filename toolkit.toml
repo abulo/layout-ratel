@@ -4,7 +4,7 @@
     Username = "root"
     Password = "mysql"
     Charset = "utf8mb4"
-    Database = "apollo_tenant"
+    Database = "iotos"
     #TimeZone 数据库时区
     TimeZone = "PRC"
     # MaxOpenConns 连接池最多同时打开的连接数
@@ -68,3 +68,14 @@
     Gccgo = ""
     Gc = ""
     Ld = ""
+[template]
+    Dao = "toolkit/go/dao.tmpl"
+    Module = "toolkit/go/module.tmpl"
+    Proto = "toolkit/go/proto.tmpl"
+    Service = "toolkit/go/service.tmpl"
+    Convert = "toolkit/go/convert.tmpl"
+    Gin = "toolkit/go/gin.tmpl"
+    Hertz = "toolkit/go/hertz.tmpl"
+    VueInterface = "toolkit/vue/interface.tmpl"
+    VueMethod = "toolkit/vue/method.tmpl"
+    VuePage = "toolkit/vue/page.tmpl"

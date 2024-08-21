@@ -1,0 +1,51 @@
+// {{.Table.TableName}} {{.Table.TableComment}}
+{{- if .Page}}
+import { ResPage } from "@/api/interface/index";
+{{- end}}
+import { PORT } from "@/api/config/servicePort";
+import http from "@/api";
+import { {{CamelStr .Table.TableName}} } from "@/api/interface/{{Helper .Table.TableName}}";
+{{- range .Method}}
+{{- if eq .Type "Create"}}
+// {{.Table.TableComment}}创建数据
+export const add{{CamelStr .Table.TableName}}Api = (params: {{CamelStr .Table.TableName}}.Res{{CamelStr .Table.TableName}}Item) => {
+  return http.post(PORT + {{ApiList "add"}}, params);
+};
+{{- else if eq .Type "Update"}}
+// {{.Table.TableComment}}更新数据
+export const update{{CamelStr .Table.TableName}}Api = (id: number, params: {{CamelStr .Table.TableName}}.Res{{CamelStr .Table.TableName}}Item) => {
+  return http.put(PORT + {{ApiList "update"}}, params);
+};
+{{- else if eq .Type "Show"}}
+// {{.Table.TableComment}}查询单条数据
+export const get{{CamelStr .Table.TableName}}Api = (id: number) => {
+  return http.get<{{CamelStr .Table.TableName}}.Res{{CamelStr .Table.TableName}}Item>(PORT + {{ApiList "item"}});
+};
+{{- else if eq .Type "Delete"}}
+// {{.Table.TableComment}}删除数据
+export const delete{{CamelStr .Table.TableName}}Api = (id: number) => {
+  return http.delete(PORT + {{ApiList "delete"}});
+};
+{{- else if eq .Type "Drop"}}
+// {{.Table.TableComment}}清理数据
+export const drop{{CamelStr .Table.TableName}}Api = (id: number) => {
+  return http.delete(PORT + {{ApiList "drop"}});
+};
+{{- else if eq .Type "Recover"}}
+// {{.Table.TableComment}}恢复数据
+export const recover{{CamelStr .Table.TableName}}Api = (id: number) => {
+  return http.put(PORT + {{ApiList "recover"}});
+};
+{{- else if eq .Type "List"}}
+// {{.Table.TableComment}}列表数据
+{{- if .Page}}
+export const get{{CamelStr .Table.TableName}}ListApi = (params?: {{CamelStr .Table.TableName}}.Req{{CamelStr .Table.TableName}}List) => {
+  return http.get<ResPage<{{CamelStr .Table.TableName}}.Res{{CamelStr .Table.TableName}}Item>>(PORT + {{ApiList "list"}}, params);
+};
+{{- else}}
+export const get{{CamelStr .Table.TableName}}ListApi = (params?: {{CamelStr .Table.TableName}}.Req{{CamelStr .Table.TableName}}List) => {
+  return http.get<{{CamelStr .Table.TableName}}.Res{{CamelStr .Table.TableName}}Item[]>(PORT + {{ApiList "list"}}, params);
+};
+{{- end}}
+{{- end}}
+{{- end}}

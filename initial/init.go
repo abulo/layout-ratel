@@ -1,6 +1,7 @@
 package initial
 
 import (
+	"github.com/abulo/layout/internal/ants"
 	"time"
 
 	"github.com/abulo/ratel/v3/client"
@@ -23,6 +24,7 @@ type Initial struct {
 	RegistryClient registry.Registry
 	Local          *time.Location
 	Limiter        *rate.Limiter
+	Pool           ants.AntsInterface // 全局协程池指针
 }
 
 // Core 系统

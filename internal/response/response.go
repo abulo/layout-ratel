@@ -7,11 +7,11 @@ import (
 	"github.com/abulo/layout/initial"
 	"github.com/abulo/layout/internal/encrypt"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/gin-gonic/gin"
+	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/spf13/cast"
 )
 
-func JSON(ctx any, status int, data map[string]any) {
+func JSON(ctx *app.RequestContext, status int, data utils.H) {
 	if !initial.Core.Config.Bool("encrypt.Disable", true) {
 		if val, ok := data["data"]; ok {
 			stringByte, err := json.Marshal(val)
@@ -24,11 +24,5 @@ func JSON(ctx any, status int, data map[string]any) {
 			}
 		}
 	}
-	// 判断 泛型 ctx 是 *app.RequestContext 还是 *gin.Context
-	if newCtx, ok := ctx.(*app.RequestContext); ok {
-		newCtx.JSON(status, data)
-	}
-	if newCtx, ok := ctx.(*gin.Context); ok {
-		newCtx.JSON(status, data)
-	}
+	ctx.JSON(status, data)
 }

@@ -1,0 +1,149 @@
+syntax = "proto3";
+// {{.Table.TableName}} {{.Table.TableComment}}
+package {{.Pkg}};
+option go_package = "{{.ModName}}/service/{{.PkgPath}};{{.Pkg}}";
+import "google/protobuf/timestamp.proto";
+{{- if .Page}}
+import "pagination.proto";
+{{- end}}
+
+// {{CamelStr .Table.TableName}}Object 数据对象
+message {{CamelStr .Table.TableName}}Object {
+	{{- range .TableColumn}}
+	// @inject_tag: db:"{{.ColumnName}}" json:"{{Helper .ColumnName}}"
+	{{- if .DataTypeMap.OptionProto}}
+	optional {{.DataTypeMap.Proto}} {{.ColumnName}} = {{.PosiTion}}; //{{.ColumnComment}}
+	{{- else }}
+	{{.DataTypeMap.Proto}} {{.ColumnName}} = {{.PosiTion}}; //{{.ColumnComment}}
+	{{- end}}
+	{{- end}}
+}
+
+{{- if .Page}}
+// {{CamelStr .Table.TableName}}TotalResponse 列表数据总量
+message {{CamelStr .Table.TableName}}TotalResponse {
+	int64 code = 1;
+	string msg = 2;
+	int64 data = 3;
+}
+{{- end}}
+
+
+{{- range .Method}}
+{{- if eq .Type "Create"}}
+// {{.Name}}Request 创建数据请求
+message {{.Name}}Request {
+	{{CamelStr .Table.TableName}}Object data = 1;
+}
+// {{.Name}}Response 创建数据响应
+message {{.Name}}Response {
+	int64 code = 1;
+	string msg = 2;
+	int64 data = 3;
+}
+{{- else if eq .Type "Update"}}
+// {{.Name}}Request 更新数据请求
+message {{.Name}}Request {
+	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
+	{{CamelStr .Table.TableName}}Object data = 2;
+}
+// {{.Name}}Response 更新数据响应
+message {{.Name}}Response {
+	int64 code = 1;
+	string msg = 2;
+}
+{{- else if eq .Type "Drop"}}
+// {{.Name}}Request 清理数据请求
+message {{.Name}}Request {
+	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
+}
+// {{.Name}}Response 清理数据响应
+message {{.Name}}Response {
+	int64 code = 1;
+	string msg = 2;
+}
+{{- else if eq .Type "Delete"}}
+// {{.Name}}Request 删除数据请求
+message {{.Name}}Request {
+	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
+}
+// {{.Name}}Response 删除数据响应
+message {{.Name}}Response {
+	int64 code = 1;
+	string msg = 2;
+}
+{{- else if eq .Type "Recover"}}
+// {{.Name}}Request 恢复数据请求
+message {{.Name}}Request {
+	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
+}
+// {{.Name}}Response 删除数据响应
+message {{.Name}}Response {
+	int64 code = 1;
+	string msg = 2;
+}
+{{- else if eq .Type "Show"}}
+// {{.Name}}Request 查询单条数据请求
+message {{.Name}}Request {
+	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
+}
+// {{.Name}}Response 查询单条数据响应
+message {{.Name}}Response {
+	int64 code = 1;
+	string msg = 2;
+	{{CamelStr .Table.TableName}}Object data = 3;
+}
+{{- else if eq .Type "Item"}}
+// {{.Name}}Request 查询单条数据请求
+message {{.Name}}Request {
+	{{ProtoRequest .Condition}}
+}
+// {{.Name}}Response 查询单条数据响应
+message {{.Name}}Response {
+	int64 code = 1;
+	string msg = 2;
+	{{CamelStr .Table.TableName}}Object data = 3;
+}
+{{- else if eq .Type "List"}}
+// {{.Name}}Request 列表数据
+message {{.Name}}Request {
+	{{ProtoRequest .Condition}}
+	{{- if .Page}}
+	// @inject_tag: db:"pagination" json:"pagination"
+	optional pagination.PaginationRequest pagination = {{Add .ConditionTotal 1}}; // 分页
+	{{- end}}
+}
+
+// {{.Name}}Response 数据响应
+message {{.Name}}Response {
+	int64 code = 1;
+  	string msg = 2;
+	repeated {{CamelStr .Table.TableName}}Object data = 3;
+}
+
+{{- if .Page}}
+// {{.Name}}TotalRequest 列表数据
+message {{.Name}}TotalRequest {
+	{{ProtoRequest .Condition}}
+}
+{{- end}}
+{{- end}}
+{{- end}}
+
+
+// {{CamelStr .Table.TableName}}Service 服务
+service {{CamelStr .Table.TableName}}Service{
+	{{- range .Method}}
+	rpc {{.Name}}({{.Name}}Request) returns ({{.Name}}Response);
+	{{- if eq .Type "List"}}
+	{{- if .Page}}
+	rpc {{.Name}}Total({{.Name}}TotalRequest) returns ({{CamelStr .Table.TableName}}TotalResponse);
+	{{- end}}
+	{{- end}}
+	{{- end}}
+}

@@ -1,0 +1,24 @@
+package {{.Pkg}}
+
+import (
+	"{{.ModName}}/dao"
+
+	"github.com/abulo/ratel/v3/stores/null"
+	"github.com/abulo/ratel/v3/util"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+// {{.Table.TableName}} {{.Table.TableComment}}
+
+// {{CamelStr .Table.TableName}}Dao 数据转换
+func {{CamelStr .Table.TableName}}Dao(item *{{CamelStr .Table.TableName}}Object) *dao.{{CamelStr .Table.TableName}} {
+	daoItem := &dao.{{CamelStr .Table.TableName}}{}
+	{{ModuleProtoConvertDao .TableColumn "daoItem" "item"}}
+	return daoItem
+}
+
+// {{CamelStr .Table.TableName}}Proto 数据绑定
+func {{CamelStr .Table.TableName}}Proto(item dao.{{CamelStr .Table.TableName}}) *{{CamelStr .Table.TableName}}Object {
+	res := &{{CamelStr .Table.TableName}}Object{}
+	{{ModuleDaoConvertProto .TableColumn "res" "item"}}
+	return res
+}

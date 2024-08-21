@@ -9,7 +9,7 @@
         DialTimeout = "1s"
         ReadTimeout = "1s"
         Direct = false
-        SlowThreshold = "600ms"
+        SlowThreshold = "1s"
         Debug = false
         DisableTraceInterceptor = false
         DisableAidInterceptor   = false

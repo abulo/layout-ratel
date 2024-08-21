@@ -1,0 +1,20 @@
+// {{.Table.TableName}} {{.Table.TableComment}}
+{{- if .Page}}
+import { ReqPage } from "./index";
+{{- end}}
+export namespace {{CamelStr .Table.TableName}} {
+	{{- range .Method}}
+	{{- if eq .Type "List"}}
+	{{- if .Page}}
+	export interface Req{{CamelStr .Table.TableName}}List extends ReqPage {
+	{{- else}}
+	export interface Req{{CamelStr .Table.TableName}}List {
+	{{- end}}
+		{{TypeScriptCondition .Condition}}
+	}
+	export interface Res{{CamelStr .Table.TableName}}Item {
+		{{TypeScript .TableColumn}}
+	}
+	{{- end}}
+	{{- end}}
+}
