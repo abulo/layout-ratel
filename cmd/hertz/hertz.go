@@ -48,7 +48,7 @@ func main() {
 	env.SetBuildTime(BuildTime)
 	env.SetBuildVersion(BuildVersion)
 	mgClient := initial.Core.Store.LoadMongoDB("mongodb")
-	loggerHook := mongo.DefaultWithURL(mgClient)
+	loggerHook := mongo.DefaultWithURL(mgClient, "system_logger")
 	defer loggerHook.Flush()
 	logger.Logger.AddHook(loggerHook)
 	logger.Logger.SetFormatter(&logrus.JSONFormatter{})
