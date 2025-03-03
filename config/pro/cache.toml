@@ -1,7 +1,7 @@
 [Cache]
-    [Cache.Captcha]
+    [Cache.Verify]
         # 生成的验证码
-        Id ="Captcha::Id"
+        Id ="Verify::Id"
     [Cache.SystemOperateLog]
         # 后台操作日志队列
         Queue = "SystemOperateLog:Queue"

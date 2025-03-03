@@ -1,3 +1,3 @@
-[rate] #限流配置
-    burst = 15  #突发流量
-    limit = 15  #限流阈值
+[Rate] #限流配置
+    Burst = 15  #突发流量
+    Limit = 15  #限流阈值

@@ -1,17 +1,17 @@
-[cookie]
+[Cookie]
     #每一个应用独有标识
-    appKey = "IoTOS"
+    AppKey = "stock"
     #过期时间
-    expires=180000
+    Expires=180000
     #路径
-    path="/"
+    Path="/"
     #域名
-    domain=""
+    Domain=""
     #https才启用
-    secure=false
+    Secure=false
     #HttpOnly属性
-    httpOnly=true
+    HttpOnly=true
     #hashKey
-    hashKey="cookies_hashKey"
+    HashKey="cookies_hashKey_stock"
     #blockKey
-    blockKey="cookies_blockKey" 
+    BlockKey="cookies_blockKey_stock"

@@ -1,23 +1,24 @@
-[grpc]
-    [grpc.common]
-        Name="etcd"
-        # BalancerName = "round_robin"
-        BalancerName = "swr"
-        Address = "etcd:///grpc:IoTOSGrpc:v1:product"
-        # Address = "172.18.1.5:21000"
-        Block = false
-        DialTimeout = "1s"
-        ReadTimeout = "1s"
-        Direct = false
-        SlowThreshold = "1s"
-        Debug = false
-        DisableTraceInterceptor = false
-        DisableAidInterceptor   = false
-        DisableTimeoutInterceptor = false
-        DisableMetricInterceptor  = false
-        DisableAccessInterceptor  = true
-        AccessInterceptorLevel = "info"
-        Etcd = "etcd" # 代理的地址 proxyetcd.Name
-[[proxygrpc]]
+[[Grpc]]
+Name="etcd"
+# BalancerName = "round_robin"
+BalancerName = "swr"
+Address = "etcd:///grpc:StockGrpc:v1:product"
+# Address = "172.18.1.8:21000"
+Block = false
+DialTimeout = "1s"
+ReadTimeout = "1s"
+Direct = false
+SlowThreshold = "1s"
+EnableDebug = false
+EnableTraceInterceptor = true
+DisableAidInterceptor   = false
+DisableTimeoutInterceptor = false
+EnableMetricInterceptor  = true
+DisableAccessInterceptor  = true
+AccessInterceptorLevel = "info"
+Etcd = "etcd" # 代理的地址 proxyetcd.Name
+# 节点名称
+LinkNode = "grpc.common"
+[[ProxyGrpc]]
 Name = "grpc"
-Node = "grpc.common"
+LinkNode = "grpc.common"

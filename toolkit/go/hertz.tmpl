@@ -52,11 +52,6 @@ func {{.Name}}Item(ctx context.Context,newCtx *app.RequestContext, id int64) (*{
 		}).Error("GrpcCall:{{.Table.TableComment}}:{{.Table.TableName}}:{{.Name}}Item")
 		return nil, err
 	}
-	tenantId := cast.ToInt64(newCtx.GetInt64("tenantId"))
-	data := {{.Pkg}}.{{.Name}}Dao(res.GetData())
-	if cast.ToInt64(data.TenantId) != tenantId {
-		return nil, status.Error(code.ConvertToGrpc(code.NoPermission), code.StatusText(code.NoPermission))
-	}
 	return res, nil
 }
 {{- end}}
@@ -91,10 +86,8 @@ func {{.Name}}(ctx context.Context,newCtx *app.RequestContext) {
 		return
 	}
 	reqInfo.Id = nil
-	reqInfo.Deleted = proto.Int32(0)
-	reqInfo.TenantId = proto.Int64(newCtx.GetInt64("tenantId")) // 租户
 	reqInfo.Creator = null.StringFrom(newCtx.GetString("userName"))
-	reqInfo.CreateTime = null.DateTimeFrom(util.Now())
+	reqInfo.CreatedTime = null.TimeStampFrom(util.Now())
 	request.Data = {{.Pkg}}.{{CamelStr .Table.TableName}}Proto(reqInfo)
 	// 执行服务
 	res, err := client.{{.Name}}(ctx, request)
@@ -153,11 +146,10 @@ func {{.Name}}(ctx context.Context,newCtx *app.RequestContext) {
 		return
 	}
 	reqInfo.Id = nil
-	reqInfo.TenantId = proto.Int64(newCtx.GetInt64("tenantId")) // 租户
 	reqInfo.Updater = null.StringFrom(newCtx.GetString("userName"))
-	reqInfo.UpdateTime = null.DateTimeFrom(util.Now())
+	reqInfo.UpdatedTime = null.TimeStampFrom(util.Now())
 	reqInfo.Creator = null.StringFromPtr(nil)
-	reqInfo.CreateTime = null.DateTimeFromPtr(nil)
+	reqInfo.CreatedTime = null.TimeStampFromPtr(nil)
 	request.Data = {{.Pkg}}.{{CamelStr .Table.TableName}}Proto(reqInfo)
 	// 执行服务
 	res, err := client.{{.Name}}(ctx, request)

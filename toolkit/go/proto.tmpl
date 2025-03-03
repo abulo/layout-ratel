@@ -10,7 +10,11 @@ import "pagination.proto";
 // {{CamelStr .Table.TableName}}Object 数据对象
 message {{CamelStr .Table.TableName}}Object {
 	{{- range .TableColumn}}
-	// @inject_tag: db:"{{.ColumnName}}" json:"{{Helper .ColumnName}}"
+	{{- if eq .ColumnKey "PRI" }}
+	// @inject_tag: gorm:"primaryKey;autoIncrement;column:{{.ColumnName}}" json:"{{Helper .ColumnName}}"
+	{{- else }}
+	// @inject_tag: gorm:"column:{{.ColumnName}}" json:"{{Helper .ColumnName}}"
+	{{- end}}
 	{{- if .DataTypeMap.OptionProto}}
 	optional {{.DataTypeMap.Proto}} {{.ColumnName}} = {{.PosiTion}}; //{{.ColumnComment}}
 	{{- else }}
@@ -44,7 +48,7 @@ message {{.Name}}Response {
 {{- else if eq .Type "Update"}}
 // {{.Name}}Request 更新数据请求
 message {{.Name}}Request {
-	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	// @inject_tag: gorm:"column:{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
 	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
 	{{CamelStr .Table.TableName}}Object data = 2;
 }
@@ -56,7 +60,7 @@ message {{.Name}}Response {
 {{- else if eq .Type "Drop"}}
 // {{.Name}}Request 清理数据请求
 message {{.Name}}Request {
-	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	// @inject_tag: gorm:"column:{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
 	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
 }
 // {{.Name}}Response 清理数据响应
@@ -67,7 +71,7 @@ message {{.Name}}Response {
 {{- else if eq .Type "Delete"}}
 // {{.Name}}Request 删除数据请求
 message {{.Name}}Request {
-	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	// @inject_tag: gorm:"column:{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
 	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
 }
 // {{.Name}}Response 删除数据响应
@@ -78,7 +82,7 @@ message {{.Name}}Response {
 {{- else if eq .Type "Recover"}}
 // {{.Name}}Request 恢复数据请求
 message {{.Name}}Request {
-	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	// @inject_tag: gorm:"column:{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
 	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
 }
 // {{.Name}}Response 删除数据响应
@@ -89,7 +93,7 @@ message {{.Name}}Response {
 {{- else if eq .Type "Show"}}
 // {{.Name}}Request 查询单条数据请求
 message {{.Name}}Request {
-	// @inject_tag: db:"{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
+	// @inject_tag: gorm:"column:{{.Primary.AlisaColumnName}}" json:"{{Helper .Primary.AlisaColumnName}}"
 	{{.Primary.DataTypeMap.Proto}} {{ .Primary.AlisaColumnName}} = 1; //{{.Primary.ColumnComment}}
 }
 // {{.Name}}Response 查询单条数据响应
@@ -114,7 +118,7 @@ message {{.Name}}Response {
 message {{.Name}}Request {
 	{{ProtoRequest .Condition}}
 	{{- if .Page}}
-	// @inject_tag: db:"pagination" json:"pagination"
+	// @inject_tag: json:"pagination"
 	optional pagination.PaginationRequest pagination = {{Add .ConditionTotal 1}}; // 分页
 	{{- end}}
 }

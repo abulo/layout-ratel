@@ -1,11 +1,11 @@
 package server
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/abulo/layout/initial"
 	"github.com/abulo/layout/service"
-	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/abulo/ratel/v3/server/xgrpc"
 	"github.com/abulo/ratel/v3/server/xgrpc/recovery"
 	"github.com/spf13/cast"
@@ -18,21 +18,24 @@ import (
 var grpcPanicRecoveryHandler recovery.RecoveryHandlerFunc
 
 func (eng *Engine) NewGrpcServer() error {
-	configAdmin := initial.Core.Config.Get("server.grpc")
-	cfg := configAdmin.(map[string]interface{})
-	//先获取这个服务是否是需要开启
-	if disable := cast.ToBool(cfg["Disable"]); disable {
-		logger.Logger.Error("server.grpc is disabled")
-		return nil
+
+	var serverConf ServerConf
+	if err := initial.Core.Config.BindStruct("Server.Grpc", &serverConf); err != nil {
+		return err
 	}
+	//先获取这个服务是否是需要开启
+	if !cast.ToBool(serverConf.Enable) {
+		return fmt.Errorf("Server.Grpc is disabled")
+	}
+
 	client := xgrpc.New()
-	client.Host = cast.ToString(cfg["Host"])
-	client.Port = cast.ToInt(cfg["Port"])
-	client.Deployment = cast.ToString(cfg["Deployment"])
-	client.DisableMetric = cast.ToBool(cfg["DisableMetric"])
-	client.DisableTrace = cast.ToBool(cfg["DisableTrace"])
-	client.ServiceAddress = cast.ToString(cfg["ServiceAddress"])
-	client.SlowQueryThresholdInMill = cast.ToInt64(cfg["SlowQueryThresholdInMill"])
+	client.Host = cast.ToString(serverConf.Host)
+	client.Port = cast.ToInt(serverConf.Port)
+	client.Deployment = cast.ToString(serverConf.Deployment)
+	client.EnableMetric = cast.ToBool(serverConf.EnableMetric)
+	client.EnableTrace = cast.ToBool(serverConf.EnableTrace)
+	client.ServiceAddress = cast.ToString(serverConf.ServiceAddress)
+	client.SlowQueryThresholdInMill = cast.ToInt64(serverConf.SlowQueryThresholdInMill)
 
 	client.WithServerOption(
 		grpc.KeepaliveEnforcementPolicy(

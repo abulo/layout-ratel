@@ -1,7 +1,8 @@
 [Cache]
-    [Cache.Captcha]
-        # 生成的验证码
-        Id ="Captcha::Id"
+    # 生成的验证码
+    [Cache.Verify]
+        # 验证码
+        Code = "Verify:Code"
     [Cache.SystemOperateLog]
         # 后台操作日志队列
         Queue = "SystemOperateLog:Queue"
@@ -18,3 +19,4 @@
         Permission = "SystemUser:Permission::UserId"
         # 设置过期时间
         PermissionExpire = 3600
+

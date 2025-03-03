@@ -1,60 +1,43 @@
-[server]
-    [server.api]
+[Server]
+    [Server.Api]
         # 是否开启
-        Disable = false
+        Enable = true
         # 监听 IP,如果是注册发现服务，需要填写内网 IP,如果是单机模式，则填写 127.0.0.1
-        Host = "172.18.1.5"
+        Host = "172.18.1.8"
         # 监听端口
-        Port = 20001
+        Port = 5555
         # 注册发现服务中的角色名称
-        Deployment = "iotos-api"
-        # 关闭指标采集
-        DisableMetric = false
-        # 关闭链路追踪
-        DisableTrace = false
-        # 关闭慢日志查询
-        DisableSlowQuery = true
+        Deployment = "stock-api"
+        # 开启指标采集
+        EnableMetric = true
+        # 开启链路追踪
+        EnableTrace = true
+        # 开启慢日志查询
+        EnableSlowQuery = false
         # 同监听一样
-        ServiceAddress = "172.18.1.5:20001"
+        ServiceAddress = "172.18.1.8:5555"
         # 慢日志
         SlowQueryThresholdInMill = 10000
-    # [server.api]
-    #     # 是否开启
-    #     Disable = false
-    #     # 监听 IP,如果是注册发现服务，需要填写内网 IP,如果是单机模式，则填写 127.0.0.1
-    #     Host = "172.18.1.5"
-    #     # 监听端口
-    #     Port = 16666
-    #     # 注册发现服务中的角色名称
-    #     Deployment = "api"
-    #     # 关闭指标采集
-    #     DisableMetric = false
-    #     # 关闭链路追踪
-    #     DisableTrace = false
-    #     # 同监听一样
-    #     ServiceAddress = "172.18.1.5:16666"
-    #     # 慢日志
-    #     SlowQueryThresholdInMill = 10000
-    [server.grpc]
+    [Server.Grpc]
         # 是否开启
-        Disable = false
+        Enable = true
         # 监听 IP,如果是注册发现服务，需要填写内网 IP,如果是单机模式，则填写 127.0.0.1
-        Host = "172.18.1.5"
+        Host = "172.18.1.8"
         # 监听端口
-        Port = 20002
+        Port = 6666
         # 注册发现服务中的角色名称
-        Deployment = "iotos-grpc"
-        # 关闭指标采集
-        DisableMetric = false
-        # 关闭链路追踪
-        DisableTrace = false
-        # 关闭慢日志查询
-        DisableSlowQuery = false
+        Deployment = "stock-grpc"
+        # 开启指标采集
+        EnableMetric = true
+        # 开启链路追踪
+        EnableTrace = true
+        # 开启慢日志查询
+        EnableSlowQuery = false
         # 同监听一样
-        ServiceAddress = "172.18.1.5:20002"
+        ServiceAddress = "172.18.1.8:6666"
         # 慢日志
         SlowQueryThresholdInMill = 10000
-    # [server.monitor]
-    #     host = "172.18.1.5"
+    # [Server.monitor]
+    #     host = "172.18.1.8"
     #     port = 18889
     #     network = "tcp4"

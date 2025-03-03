@@ -7,6 +7,6 @@ func (initial *Initial) Session(name string) *session.Session {
 	return &session.Session{
 		Name:   name,
 		Driver: initial.Store.LoadRedis("redis"),
-		TTL:    initial.Config.Int64("cookie.expires", 300),
+		TTL:    initial.Config.Int64("Cookie.Expires", 300),
 	}
 }

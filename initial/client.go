@@ -13,121 +13,198 @@ import (
 	"google.golang.org/grpc/keepalive"
 )
 
-func (initial *Initial) InitRegistry() *Initial {
-	configs := initial.Config.Get("etcd")
-	list := configs.(map[string]interface{})
-	links := make(map[string]*etcdv3.Config)
-	for node, nodeConfig := range list {
-		config := etcdv3.New()
-		res := nodeConfig.(map[string]interface{})
-		if Name := cast.ToString(res["Name"]); Name != "" {
-			config.SetName(Name)
-			config.SetNode(Name)
-		}
-		if Endpoints := cast.ToStringSlice(res["Endpoints"]); len(Endpoints) > 0 {
-			config.SetEndpoints(Endpoints)
-		}
-		if CertFile := cast.ToString(res["CertFile"]); CertFile != "" {
-			config.SetCertFile(CertFile)
-		}
-		if KeyFile := cast.ToString(res["KeyFile"]); KeyFile != "" {
-			config.SetKeyFile(KeyFile)
-		}
-		if CaCert := cast.ToString(res["CaCert"]); CaCert != "" {
-			config.SetCaCert(CaCert)
-		}
-		config.SetBasicAuth(cast.ToBool(res["BasicAuth"]))
-		if UserName := cast.ToString(res["UserName"]); UserName != "" {
-			config.SetUserName(UserName)
-		}
-		if Password := cast.ToString(res["Password"]); Password != "" {
-			config.SetPassword(Password)
-		}
-		if ConnectTimeout := cast.ToString(res["ConnectTimeout"]); ConnectTimeout != "" {
-			config.SetConnectTimeout(util.Duration(ConnectTimeout))
-		}
-		config.SetSecure(cast.ToBool(res["Secure"]))
-		if AutoSyncInterval := cast.ToString(res["AutoSyncInterval"]); AutoSyncInterval != "" {
-			config.SetAutoSyncInterval(util.Duration(AutoSyncInterval))
-		}
-		if Prefix := cast.ToString(res["Prefix"]); Prefix != "" {
-			config.SetPrefix(Prefix)
-		}
-		links["etcd."+node] = config
+type (
+	EtcdConf struct {
+		Name             *string      `json:"Name"`
+		Endpoints        *StringSlice `json:"Endpoints"`
+		CertFile         *string      `json:"CertFile"`
+		KeyFile          *string      `json:"KeyFile"`
+		CaCert           *string      `json:"CaCert"`
+		BasicAuth        *bool        `json:"BasicAuth"`
+		UserName         *string      `json:"UserName"`
+		Password         *string      `json:"Password"`
+		ConnectTimeout   *string      `json:"ConnectTimeout"`
+		Secure           *bool        `json:"Secure"`
+		AutoSyncInterval *string      `json:"AutoSyncInterval"`
+		Prefix           *string      `json:"Prefix"`
+		EnableTrace      *bool        `json:"EnableTrace"`
+		LinkNode         *string      `json:"LinkNode"`
 	}
-	proxyConfigs := initial.Config.Get("proxyetcd")
-	proxyRes := proxyConfigs.([]map[string]interface{})
-	for _, val := range proxyRes {
+	ProxyEtcdConf struct {
+		Name     *string `json:"Name"`
+		LinkNode *string `json:"LinkNode"`
+	}
+
+	GrpcConf struct {
+		Name                     *string `json:"Name"`
+		BalancerName             *string `json:"BalancerName"`
+		Address                  *string `json:"Address"`
+		Block                    *bool   `json:"Block"`
+		DialTimeout              *string `json:"DialTimeout"`
+		ReadTimeout              *string `json:"ReadTimeout"`
+		Direct                   *bool   `json:"Direct"`
+		SlowThreshold            *string `json:"SlowThreshold"`
+		EnableDebug              *bool   `json:"EnableDebug"`
+		EnableTraceInterceptor   *bool   `json:"EnableTraceInterceptor"`
+		EnableAidInterceptor     *bool   `json:"EnableAidInterceptor"`
+		EnableTimeoutInterceptor *bool   `json:"EnableTimeoutInterceptor"`
+		EnableMetricInterceptor  *bool   `json:"EnableMetricInterceptor"`
+		EnableAccessInterceptor  *bool   `json:"EnableAccessInterceptor"`
+		AccessInterceptorLevel   *string `json:"AccessInterceptorLevel"`
+		Etcd                     *string `json:"Etcd"`
+		LinkNode                 *string `json:"LinkNode"`
+	}
+	ProxyGrpcConf struct {
+		Name     *string `json:"Name"`
+		LinkNode *string `json:"LinkNode"`
+	}
+)
+
+func (initial *Initial) InitRegistry() *Initial {
+	var etcdConfs []EtcdConf
+	if err := initial.Config.BindStruct("Etcd", &etcdConfs); err != nil {
+		panic(err)
+	}
+	links := make(map[string]*etcdv3.Config)
+	for _, item := range etcdConfs {
+		config := etcdv3.New()
+		if item.Name == nil {
+			panic("etcd name is empty")
+		}
+		config.SetName(cast.ToString(item.Name))
+		config.SetNode(cast.ToString(item.Name))
+		if item.Endpoints == nil {
+			panic("etcd endpoints is empty")
+		}
+		config.SetEndpoints(*item.Endpoints)
+		if item.CertFile != nil {
+			config.SetCertFile(cast.ToString(item.CertFile))
+		}
+		if item.KeyFile != nil {
+			config.SetKeyFile(cast.ToString(item.KeyFile))
+		}
+		if item.CaCert != nil {
+			config.SetCaCert(cast.ToString(item.CaCert))
+		}
+		config.SetBasicAuth(cast.ToBool(item.BasicAuth))
+		if item.UserName != nil {
+			config.SetUserName(cast.ToString(item.UserName))
+		}
+		if item.Password != nil {
+			config.SetPassword(cast.ToString(item.Password))
+		}
+		if item.ConnectTimeout != nil {
+			config.SetConnectTimeout(util.Duration(cast.ToString(item.ConnectTimeout)))
+		}
+		config.SetSecure(cast.ToBool(item.Secure))
+		if item.AutoSyncInterval != nil {
+			config.SetAutoSyncInterval(util.Duration(cast.ToString(item.AutoSyncInterval)))
+		}
+		if item.Prefix != nil {
+			config.SetPrefix(cast.ToString(item.Prefix))
+		}
+		if item.EnableTrace != nil {
+			config.SetEnableTrace(cast.ToBool(item.EnableTrace))
+		}
+		node := cast.ToString(item.LinkNode)
+		links[node] = config
+	}
+	var proxyEtcdConfs []ProxyEtcdConf
+	if err := initial.Config.BindStruct("ProxyEtcd", &proxyEtcdConfs); err != nil {
+		panic(err)
+	}
+	for _, val := range proxyEtcdConfs {
 		proxyPool := client.NewEtcdConfig()
-		if node := cast.ToString(val["Node"]); node != "" {
-			proxyPool.Store(links[node])
+		if val.LinkNode == nil {
+			panic("ProxyEtcd LinkNode is empty")
 		}
-		if Name := cast.ToString(val["Name"]); Name != "" {
-			initial.Client.StoreEtcd(Name, proxyPool)
+		linkNode := cast.ToString(val.LinkNode)
+		proxyPool.Store(links[linkNode])
+		if val.Name == nil {
+			panic("ProxyEtcd Name is empty")
 		}
+		node := cast.ToString(val.Name)
+		initial.Client.StoreEtcd(node, proxyPool)
 	}
 	return initial
 }
 
 func (initial *Initial) InitGrpc() *Initial {
-	configs := initial.Config.Get("grpc")
-	list := configs.(map[string]interface{})
+	var grpcConfs []GrpcConf
+	if err := initial.Config.BindStruct("Grpc", &grpcConfs); err != nil {
+		panic(err)
+	}
 	links := make(map[string]*grpc.Config)
-	for node, nodeConfig := range list {
+	for _, item := range grpcConfs {
 		config := grpc.New()
-		res := nodeConfig.(map[string]interface{})
-		if Name := cast.ToString(res["Name"]); Name != "" {
-			config.SetName(Name)
+		if item.Name != nil {
+			config.SetName(cast.ToString(item.Name))
 		}
-		if BalancerName := cast.ToString(res["BalancerName"]); BalancerName != "" {
-			config.SetBalancerName(BalancerName)
+		if item.BalancerName != nil {
+			config.SetBalancerName(cast.ToString(item.BalancerName))
 		}
-		if Address := cast.ToString(res["Address"]); Address != "" {
-			config.SetAddress(Address)
+		if item.Address != nil {
+			config.SetAddress(cast.ToString(item.Address))
 		}
-		config.SetBlock(cast.ToBool(res["Block"]))
-		if DialTimeout := cast.ToString(res["DialTimeout"]); DialTimeout != "" {
-			config.SetDialTimeout(util.Duration(DialTimeout))
+		if item.Block == nil {
+			panic("grpc block is empty")
 		}
-		if ReadTimeout := cast.ToString(res["ReadTimeout"]); ReadTimeout != "" {
-			config.SetReadTimeout(util.Duration(ReadTimeout))
+		config.SetBlock(cast.ToBool(item.Block))
+		if item.DialTimeout != nil {
+			config.SetDialTimeout(util.Duration(cast.ToString(item.DialTimeout)))
 		}
-		config.SetDirect(cast.ToBool(res["Direct"]))
-		if SlowThreshold := cast.ToString(res["SlowThreshold"]); SlowThreshold != "" {
-			config.SetSlowThreshold(util.Duration(SlowThreshold))
+		if item.ReadTimeout != nil {
+			config.SetReadTimeout(util.Duration(cast.ToString(item.ReadTimeout)))
 		}
-		config.SetDebug(cast.ToBool(res["Debug"]))
-		config.SetDisableTraceInterceptor(cast.ToBool(res["DisableTraceInterceptor"]))
-		config.SetDisableAidInterceptor(cast.ToBool(res["DisableAidInterceptor"]))
-		config.SetDisableTimeoutInterceptor(cast.ToBool(res["DisableTimeoutInterceptor"]))
-		config.SetDisableMetricInterceptor(cast.ToBool(res["DisableMetricInterceptor"]))
-		config.SetDisableAccessInterceptor(cast.ToBool(res["DisableAccessInterceptor"]))
-		if AccessInterceptorLevel := cast.ToString(res["AccessInterceptorLevel"]); AccessInterceptorLevel != "" {
-			config.SetAccessInterceptorLevel(AccessInterceptorLevel)
+		if item.Direct == nil {
+			panic("grpc direct is empty")
 		}
+		config.SetDirect(cast.ToBool(item.Direct))
+
+		if item.SlowThreshold != nil {
+			config.SetSlowThreshold(util.Duration(cast.ToString(item.SlowThreshold)))
+		}
+		config.SetEnableDebug(cast.ToBool(item.EnableDebug))
+		config.SetEnableTraceInterceptor(cast.ToBool(item.EnableTraceInterceptor))
+		config.SetEnableAidInterceptor(cast.ToBool(item.EnableAidInterceptor))
+		config.SetEnableTimeoutInterceptor(cast.ToBool(item.EnableTimeoutInterceptor))
+		config.SetEnableMetricInterceptor(cast.ToBool(item.EnableMetricInterceptor))
+		config.SetEnableAccessInterceptor(cast.ToBool(item.EnableAccessInterceptor))
+		if item.AccessInterceptorLevel != nil {
+			config.SetAccessInterceptorLevel(cast.ToString(item.AccessInterceptorLevel))
+		}
+
 		config.KeepAlive = &keepalive.ClientParameters{
 			Time:                10 * time.Second, // send pings every 10 seconds if there is no activity
 			Timeout:             time.Second,      // wait 1 second for ping ack before considering the connection dead
 			PermitWithoutStream: true,             // send pings even without active streams
 		}
-		if Etcd := cast.ToString(res["Etcd"]); Etcd != "" {
+		if Etcd := cast.ToString(item.Etcd); Etcd != "" {
 			config.SetEtcd(initial.Client.LoadEtcd(Etcd))
 		}
 		config.BalancerName = balancer.NameSmoothWeightRoundRobin
 		config.BalancerName = p2c.Name
-		links["grpc."+node] = config
+		node := cast.ToString(item.LinkNode)
+		links[node] = config
 	}
 
-	proxyConfigs := initial.Config.Get("proxygrpc")
-	proxyRes := proxyConfigs.([]map[string]interface{})
-	for _, val := range proxyRes {
+	var proxyGrpcConfs []ProxyGrpcConf
+	if err := initial.Config.BindStruct("ProxyGrpc", &proxyGrpcConfs); err != nil {
+		panic(err)
+	}
+
+	for _, val := range proxyGrpcConfs {
 		proxyPool := client.NewGrpcConfig()
-		if node := cast.ToString(val["Node"]); node != "" {
-			proxyPool.Store(links[node])
+		if val.LinkNode == nil {
+			panic("ProxyGrpc LinkNode is empty")
 		}
-		if Name := cast.ToString(val["Name"]); Name != "" {
-			initial.Client.StoreGrpc(Name, proxyPool)
+		linkNode := cast.ToString(val.LinkNode)
+		proxyPool.Store(links[linkNode])
+		if val.Name == nil {
+			panic("ProxyGrpc Name is empty")
 		}
+		name := cast.ToString(val.Name)
+		initial.Client.StoreGrpc(name, proxyPool)
 	}
 
 	return initial

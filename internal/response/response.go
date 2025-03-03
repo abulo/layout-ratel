@@ -12,7 +12,7 @@ import (
 )
 
 func JSON(ctx *app.RequestContext, status int, data utils.H) {
-	if !initial.Core.Config.Bool("encrypt.Disable", true) {
+	if !initial.Core.Config.Bool("Encrypt.Disable", true) {
 		if val, ok := data["data"]; ok {
 			stringByte, err := json.Marshal(val)
 			if err != nil {
@@ -20,7 +20,7 @@ func JSON(ctx *app.RequestContext, status int, data utils.H) {
 				data["msg"] = code.StatusText(code.ParamInvalid)
 				data["data"] = nil
 			} else {
-				data["data"] = encrypt.AesCBCEncrypt(cast.ToString(stringByte), initial.Core.Config.String("encrypt.SecretKey"), initial.Core.Config.String("encrypt.Iv"), encrypt.PKCS7)
+				data["data"] = encrypt.AesCBCEncrypt(cast.ToString(stringByte), initial.Core.Config.String("Encrypt.SecretKey"), initial.Core.Config.String("Encrypt.Iv"), encrypt.PKCS7)
 			}
 		}
 	}

@@ -1,0 +1,25 @@
+[[Sql]]
+Host = "127.0.0.1" # 数据库 IP
+Port = "5432" # 数据库端口
+Username = "postgres" # 数据库用户名
+Password = "abulo" # 数据库密码
+Charset = "utf8mb4" # 数据库字符集
+Database = "postgres" # 数据库名称
+ParseTime = true # 是否解析时间
+TimeZone = "Asia/Shanghai" # 数据库时区
+SslMode = false # 数据库SSL模式  postgresql 专用
+DialTimeOut = "5s" # 连接超时时间 clickhouse 专用
+ReadTimeOut = "5s" # 读取超时时间 clickhouse 专用
+MaxIdleConns = 64 # 连接池里最大空闲连接数。必须要比maxOpenConns小
+MaxOpenConns = 64 # 连接池最大打开连接数
+MaxLifetime = 5 # 连接池里面的连接最大存活时长
+MaxIdleTime = 5 # 连接池里面的连接最大空闲时长
+EnableMetric = false # 开启指标采集
+EnableTrace = false # 开启链路追踪
+DriverName = "postgres" # 数据库驱动名称
+LinkNode = "sql.host1"
+
+[[ProxySql]]
+Name = "postgres"
+Master = ["sql.host1"]
+Slave = ["sql.host1"]

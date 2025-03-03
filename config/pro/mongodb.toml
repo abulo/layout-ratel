@@ -1,14 +1,15 @@
-[mongodb]
-    [mongodb.common]
-        URI="mongodb://IoTOS:IoTOS@127.0.0.1:27017/IoTOS?authSource=admin&authMechanism=SCRAM-SHA-256"
-        MaxConnIdleTime = 1
-        MaxPoolSize = 64
-        MinPoolSize = 10
-        # 关闭指标采集
-        DisableMetric = false
-        # 关闭链路追踪
-        DisableTrace = false
+[[MongoDB]]
+URI="mongodb://admin:admin@127.0.0.1:27017/stock?authSource=admin&authMechanism=SCRAM-SHA-256"
+MaxConnIdleTime = 1
+MaxPoolSize = 64
+MinPoolSize = 10
+# 开启指标采集
+EnableMetric = true
+# 开启链路追踪
+EnableTrace = true
+#节点名称
+LinkNode = "mongodb.common"
 
-[[proxymongodb]]
+[[ProxyMongoDB]]
 Name = "mongodb"
-Node = ["mongodb.common"]
+LinkNode = "mongodb.common"

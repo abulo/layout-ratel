@@ -8,47 +8,76 @@ import (
 	"github.com/spf13/cast"
 )
 
+type (
+	MongoDBConf struct {
+		URI             *string `json:"URI"`
+		MaxConnIdleTime *int    `json:"MaxConnIdleTime"`
+		MaxPoolSize     *int    `json:"MaxPoolSize"`
+		MinPoolSize     *int    `json:"MinPoolSize"`
+		EnableMetric    *bool   `json:"EnableMetric"`
+		EnableTrace     *bool   `json:"EnableTrace"`
+		LinkNode        *string `json:"LinkNode"`
+	}
+	ProxyMongoDBConf struct {
+		Name     *string `json:"Name"`
+		LinkNode *string `json:"LinkNode"`
+	}
+)
+
 // InitMongoDB load mongodb && returns an mongodb instance.
 func (initial *Initial) InitMongoDB() *Initial {
-	configs := initial.Config.Get("mongodb")
-	list := configs.(map[string]interface{})
+	var mongodbConfigs []MongoDBConf
+	if err := initial.Config.BindStruct("MongoDB", &mongodbConfigs); err != nil {
+		panic(err)
+	}
 	links := make(map[string]*mongodb.MongoDB)
-	for node, nodeConfig := range list {
+	for _, item := range mongodbConfigs {
 		opts := make([]mongodb.Option, 0)
-		res := nodeConfig.(map[string]interface{})
-		uri := cast.ToString(res["URI"])
-		if uri == "" {
+		if item.URI == nil {
 			panic("mongodb uri is empty")
 		}
-		if MaxConnIdleTime := cast.ToInt64(res["MaxConnIdleTime"]); MaxConnIdleTime > 0 {
-			opts = append(opts, mongodb.WithMaxConnIdleTime(cast.ToDuration(MaxConnIdleTime)*time.Minute))
+		uri := cast.ToString(item.URI)
+		if item.MaxConnIdleTime == nil {
+			panic("mongodb MaxConnIdleTime is empty")
 		}
-		if MaxPoolSize := cast.ToInt64(res["MaxPoolSize"]); MaxPoolSize > 0 {
-			opts = append(opts, mongodb.WithMaxPoolSize(cast.ToUint64(MaxPoolSize)))
+		opts = append(opts, mongodb.WithMaxConnIdleTime(cast.ToDuration(item.MaxConnIdleTime)*time.Minute))
+		if item.MaxPoolSize == nil {
+			panic("mongodb MaxPoolSize is empty")
 		}
-		if MinPoolSize := cast.ToInt64(res["MinPoolSize"]); MinPoolSize > 0 {
-			opts = append(opts, mongodb.WithMinPoolSize(cast.ToUint64(MinPoolSize)))
+		opts = append(opts, mongodb.WithMaxPoolSize(cast.ToUint64(item.MaxPoolSize)))
+		if item.MinPoolSize == nil {
+			panic("mongodb MinPoolSize is empty")
 		}
+		opts = append(opts, mongodb.WithMinPoolSize(cast.ToUint64(item.MinPoolSize)))
 		client, err := mongodb.NewMongoDBClient(uri, opts...)
 		if err != nil {
 			panic(err)
 		}
-		client.SetDisableMetric(cast.ToBool(res["DisableMetric"]))
-		client.SetDisableTrace(cast.ToBool(res["DisableTrace"]))
-		links["mongodb."+node] = client
+		client.SetEnableMetric(cast.ToBool(item.EnableMetric))
+		client.SetEnableTrace(cast.ToBool(item.EnableTrace))
+		if item.LinkNode == nil {
+			panic("mongodb LinkNode is empty")
+		}
+		node := cast.ToString(item.LinkNode)
+		links[node] = client
 	}
-	proxyConfigs := initial.Config.Get("proxymongodb")
-	proxyRes := proxyConfigs.([]map[string]interface{})
-	for _, val := range proxyRes {
+
+	var proxyConfigs []ProxyMongoDBConf
+	if err := initial.Config.BindStruct("ProxyMongoDB", &proxyConfigs); err != nil {
+		panic(err)
+	}
+	for _, val := range proxyConfigs {
 		proxyPool := proxy.NewMongoDB()
-		if node := cast.ToStringSlice(val["Node"]); len(node) > 0 {
-			for _, v := range node {
-				proxyPool.Store(links[v])
-			}
+		if val.LinkNode == nil {
+			panic("ProxyMongoDB LinkNode is empty")
 		}
-		if Name := cast.ToString(val["Name"]); Name != "" {
-			initial.Store.StoreMongoDB(Name, proxyPool)
+		linkNode := cast.ToString(val.LinkNode)
+		proxyPool.Store(links[linkNode])
+		if val.Name == nil {
+			panic("ProxyMongoDB Name is empty")
 		}
+		node := cast.ToString(val.Name)
+		initial.Store.StoreMongoDB(node, proxyPool)
 	}
 	return initial
 }

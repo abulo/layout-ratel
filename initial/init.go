@@ -1,9 +1,9 @@
 package initial
 
 import (
-	"github.com/abulo/layout/internal/ants"
 	"time"
 
+	"github.com/abulo/layout/internal/ants"
 	"github.com/abulo/ratel/v3/client"
 	"github.com/abulo/ratel/v3/config"
 	"github.com/abulo/ratel/v3/registry"

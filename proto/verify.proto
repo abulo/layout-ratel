@@ -1,0 +1,50 @@
+
+syntax = "proto3";
+// verify 验证码服务
+package verify;
+option go_package = "cloud/service/verify;verify";
+
+// GenerateObject 数据对象
+message GenerateObject {
+    // @inject_tag: gorm:"column:verify_code_id" json:"verifyCodeId"
+    string verify_code_id = 1;
+    // @inject_tag: gorm:"column:verify_image" json:"verifyImage"
+	string verify_image = 2;
+}
+
+// VerifyObject 数据对象
+message VerifyObject {
+    bool result = 1;
+}
+
+// GenerateRequest 验证码生成请求
+message GenerateRequest{
+}
+
+// GenerateResponse 验证码生成响应
+message GenerateResponse {
+	int64 code = 1;
+	string msg = 2;
+	GenerateObject data = 3;
+}
+
+// VerifyRequest 验证码验证请求
+message VerifyRequest {
+    // @inject_tag: gorm:"column:verify_code_id" json:"verifyCodeId"
+    string verify_code_id = 1;
+    // @inject_tag: gorm:"column:verify_code" json:"verifyCode"
+	string verify_code = 2;
+}
+
+// VerifyResponse 验证码验证响应
+message VerifyResponse {
+    int64 code = 1;
+	string msg = 2;
+	VerifyObject data = 3;
+}
+
+// VerifyService 验证码服务
+service VerifyService{
+    rpc Generate(GenerateRequest) returns (GenerateResponse);
+    rpc Verify(VerifyRequest) returns (VerifyResponse);
+}

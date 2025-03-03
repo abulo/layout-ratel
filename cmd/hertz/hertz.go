@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"os"
+	"path"
 
 	"github.com/abulo/layout/initial"
 	"github.com/abulo/layout/server"
@@ -17,15 +18,12 @@ import (
 func init() {
 	// 全局设置
 	global := initial.New()
-	configPath := global.GetEnvironment(global.Path+"/config/env", "configDir")
+	configPath := global.GetEnvironment(path.Join(global.Path, "config", "env"), "configDir")
 	if util.Empty(configPath) {
 		panic("configPath is empty")
 	}
-	//配置加载 toml 文件
-	dirs := make([]string, 0)
-	dirs = append(dirs, global.Path+"/config/"+configPath)
 	//加载配置文件
-	global.InitConfig(dirs...)
+	global.InitConfig(path.Join(global.Path, "config", configPath))
 	global.InitMongoDB()
 	global.InitRedis()
 	global.InitRegistry()
@@ -39,7 +37,7 @@ var BuildVersion string // 编译版本
 var BuildTime string    // 编译时间
 // 程序主入口
 func main() {
-	env.SetName("ApolloHertz")
+	env.SetName("StockHertz")
 	env.SetAppID("1")
 	env.SetAppRegion("sichuan")
 	env.SetAppZone("chengdu")
@@ -47,8 +45,8 @@ func main() {
 	env.SetAppHost("golang")
 	env.SetBuildTime(BuildTime)
 	env.SetBuildVersion(BuildVersion)
-	mgClient := initial.Core.Store.LoadMongoDB("mongodb")
-	loggerHook := mongo.DefaultWithURL(mgClient, "system_logger")
+	client := initial.Core.Store.LoadMongoDB("mongodb")
+	loggerHook := mongo.DefaultWithURL(client, "sys_entry")
 	defer loggerHook.Flush()
 	logger.Logger.AddHook(loggerHook)
 	logger.Logger.SetFormatter(&logrus.JSONFormatter{})

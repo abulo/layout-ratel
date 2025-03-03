@@ -1,7 +1,7 @@
-[trace]
+[Trace]
     # 是否开启
     EnableRPCMetrics = true
-    LocalAgentHostPort = "172.18.1.6:6831"
+    LocalAgentHostPort = "http://172.18.1.7:14268/api/traces"
     LogSpans = true
     Param = 1.0
     PanicOnError = true

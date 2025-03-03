@@ -11,7 +11,6 @@ import (
 
 func CronJob() func() {
 	redisHandler := initial.Core.Store.LoadRedis("redis")
-	driver.SetNodeIdKeyPrefix(redisHandler.KeyPrefix)
 	driverHandler := driver.NewRedisDriver(redisHandler)
 	cron := task.NewTaskWithOption(
 		"WorkerService",

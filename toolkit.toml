@@ -1,26 +1,22 @@
 [db]
-    Host = "172.18.1.3"
-    Port = "3306"
-    Username = "root"
-    Password = "mysql"
-    Charset = "utf8mb4"
-    Database = "iotos"
-    #TimeZone 数据库时区
-    TimeZone = "PRC"
-    # MaxOpenConns 连接池最多同时打开的连接数
-    MaxOpenConns = 64
-    # MaxIdleConns 连接池里最大空闲连接数。必须要比maxOpenConns小
-    MaxIdleConns = 64
-    # MaxLifetime 连接池里面的连接最大存活时长(分钟)
-    MaxLifetime = 5
-    # MaxIdleTime 连接池里面的连接最大空闲时长(分钟)
-    MaxIdleTime = 5
-    # 关闭指标采集
-    DisableMetric = false
-    # 关闭链路追踪
-    DisableTrace = false
-    # 驱动名称
-    DriverName = "mysql"
+    Host = "172.18.1.3" # 数据库 IP
+    Port = "5432" # 数据库端口
+    Username = "postgres" # 数据库用户名
+    Password = "abulo" # 数据库密码
+    Charset = "utf8mb4" # 数据库字符集
+    Database = "postgres" # 数据库名称
+    ParseTime = true # 是否解析时间
+    TimeZone = "PRC" # 数据库时区
+    SslMode = false # 数据库SSL模式  postgresql 专用
+    DialTimeOut = "5s" # 连接超时时间 clickhouse 专用
+    ReadTimeOut = "5s" # 读取超时时间 clickhouse 专用
+    MaxIdleConns = 64 # 连接池里最大空闲连接数。必须要比maxOpenConns小
+    MaxOpenConns = 64 # 连接池最大打开连接数
+    MaxLifetime = 5 # 连接池里面的连接最大存活时长
+    MaxIdleTime = 5 # 连接池里面的连接最大空闲时长
+    EnableMetric = false # 开启指标采集
+    EnableTrace = false # 开启链路追踪
+    DriverName = "postgres" # 数据库驱动名称
 [vue]
     MethodPath = "src/api/method"
     InterfacePath = "src/api/interface"
@@ -31,12 +27,16 @@
     # 为 go build 最后的文件参数，可以为空，表示当前目录。
     # MainFiles = "./ratel/v3/tookit"
     MainFiles = ["./cmd/hertz","./cmd/grpc"]
+    # MainFiles = ["./cmd/job/base","./cmd/job/init","./cmd/job/daily","./cmd/job/hourly","./cmd/job/minute", "./cmd/job/config"]
+    # MainFiles = ["./cmd/job/init","./cmd/job/config"]
     # 指定可执行文件输出的文件路径
     # 为空表示默认值，若不带路径信息，会附加在 Dirs 的第一个路径上；
     # windows 系统无须指定 .exe 扩展名，会自行添加。
     # 如果带路径信息，则会使用该文件所在目录作为工作目录。
     # OutputName = "./ratel/v3/tookit/tookit"
     OutputName = ["./bin/hertz","./bin/grpc"]
+    # OutputName = ["./bin/init","./bin/config"]
+    # OutputName = ["./bin/base","./bin/init","./bin/daily","./bin/hourly","./bin/minute", "./bin/config"]
     # 指定监视的文件扩展名
     # 为空表示不监视任何文件，如果指定了 *，表示所有文件类型，包括没有扩展名的文件。
     Exts = [".go",".json",".toml"]

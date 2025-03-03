@@ -18,87 +18,54 @@ import (
 {{- if eq .Type "Create"}}
 // {{.Name}} 创建数据
 func {{.Name}}(ctx context.Context,data dao.{{CamelStr .Table.TableName}})(res int64, err error){
-	db := initial.Core.Store.LoadSQL("mysql").Write()
-	builder := sql.NewBuilder()
-	query,args,err := builder.Table("{{Char .Table.TableName}}").Insert(data)
-	if err != nil {
-		return
-	}
-	res, err = db.Insert(ctx ,query,args...)
+	db := initial.Core.Store.LoadSQL("postgres").Write()
+	err = db.WithContext(ctx).Model(&dao.{{CamelStr .Table.TableName}}{}).Create(&data).Error
+	res = cast.ToInt64(data.Id)
 	return
 }
 {{- else if eq .Type "Update"}}
 // {{.Name}} 更新数据
 func {{.Name}}(ctx context.Context,{{Helper .Primary.AlisaColumnName}} {{.Primary.DataTypeMap.Default}},data dao.{{CamelStr .Table.TableName}})(res int64, err error){
-	db := initial.Core.Store.LoadSQL("mysql").Write()
-	builder := sql.NewBuilder()
-	query,args,err := builder.Table("{{Char .Table.TableName}}").Where("{{Char .Primary.ColumnName}}",{{Helper .Primary.AlisaColumnName}}).Update(data)
-	if err != nil {
-		return
-	}
-	res, err = db.Update(ctx ,query,args...)
-	return
+	db := initial.Core.Store.LoadSQL("postgres").Write()
+	result := db.WithContext(ctx).Model(&dao.{{CamelStr .Table.TableName}}{}).Where("{{.Primary.ColumnName}} = ?", {{Helper .Primary.AlisaColumnName}}).Updates(data)
+	return result.RowsAffected, result.Error
 }
 {{- else if eq .Type "Show"}}
 // {{.Name}} 查询单条数据
 func {{.Name}}(ctx context.Context,{{Helper .Primary.AlisaColumnName}} {{.Primary.DataTypeMap.Default}})(res dao.{{CamelStr .Table.TableName}},err error){
-	db := initial.Core.Store.LoadSQL("mysql").Read()
-	builder := sql.NewBuilder()
-	query,args,err := builder.Table("{{Char .Table.TableName}}").Where("{{Char .Primary.ColumnName}}",{{Helper .Primary.AlisaColumnName}}).Row()
-	if err != nil {
-		return
-	}
-	err = db.QueryRow(ctx ,query,args...).ToStruct(&res)
+	db := initial.Core.Store.LoadSQL("postgres").Read()
+	err = db.WithContext(ctx).Model(&dao.{{CamelStr .Table.TableName}}{}).Where("{{.Primary.ColumnName}} = ?", {{Helper .Primary.AlisaColumnName}}).Find(&res).Error
 	return
 }
 {{- else if eq .Type "Drop"}}
 // {{.Name}} 清理数据
 func {{.Name}}(ctx context.Context,{{Helper .Primary.AlisaColumnName}} {{.Primary.DataTypeMap.Default}})(res int64,err error){
-	db := initial.Core.Store.LoadSQL("mysql").Write()
-	builder := sql.NewBuilder()
-	query,args,err := builder.Table("{{Char .Table.TableName}}").Where("{{Char .Primary.ColumnName}}",{{Helper .Primary.AlisaColumnName}}).Delete()
-	if err != nil {
-		return
-	}
-	res, err = db.Delete(ctx ,query,args...)
-	return
+	db := initial.Core.Store.LoadSQL("postgres").Write()
+	result := db.WithContext(ctx).Where("{{.Primary.ColumnName}} = ?", {{Helper .Primary.AlisaColumnName}}).Delete(&dao.{{CamelStr .Table.TableName}}{})
+	return result.RowsAffected, result.Error
 }
 {{- else if eq .Type "Delete"}}
 // {{.Name}} 删除数据
 func {{.Name}}(ctx context.Context,{{Helper .Primary.AlisaColumnName}} {{.Primary.DataTypeMap.Default}})(res int64,err error){
-	db := initial.Core.Store.LoadSQL("mysql").Write()
-	builder := sql.NewBuilder()
+	db := initial.Core.Store.LoadSQL("postgres").Write()
 	{{- if .SoftDelete}}
 	data := make(map[string]any)
 	data["deleted"] = 1
-	query,args,err := builder.Table("{{Char .Table.TableName}}").Where("{{Char .Primary.ColumnName}}",{{Helper .Primary.AlisaColumnName}}).Update(data)
-	if err != nil {
-		return
-	}
-	res, err = db.Update(ctx ,query,args...)
+	result := db.WithContext(ctx).Model(&dao.{{CamelStr .Table.TableName}}{}).Where("{{.Primary.ColumnName}} = ?", {{Helper .Primary.AlisaColumnName}}).Updates(data)
 	{{- else}}
-	query,args,err := builder.Table("{{Char .Table.TableName}}").Where("{{Char .Primary.ColumnName}}",{{Helper .Primary.AlisaColumnName}}).Delete()
-	if err != nil {
-		return
-	}
-	res, err = db.Delete(ctx ,query,args...)
+	result := db.WithContext(ctx).Where("{{.Primary.ColumnName}} = ?", {{Helper .Primary.AlisaColumnName}}).Delete(&dao.{{CamelStr .Table.TableName}}{})
 	{{- end}}
-	return
+	return result.RowsAffected, result.Error
 }
 {{- else if eq .Type "Recover"}}
 {{- if .SoftDelete}}
 // {{.Name}} 恢复数据
 func {{.Name}}(ctx context.Context,{{Helper .Primary.AlisaColumnName}} {{.Primary.DataTypeMap.Default}})(res int64,err error){
-	db := initial.Core.Store.LoadSQL("mysql").Write()
-	builder := sql.NewBuilder()
+	db := initial.Core.Store.LoadSQL("postgres").Write()
 	data := make(map[string]any)
 	data["deleted"] = 0
-	query,args,err := builder.Table("{{Char .Table.TableName}}").Where("{{Char .Primary.ColumnName}}",{{Helper .Primary.AlisaColumnName}}).Update(data)
-	if err != nil {
-		return
-	}
-	res, err = db.Update(ctx ,query,args...)
-	return
+	result := db.WithContext(ctx).Model(&dao.{{CamelStr .Table.TableName}}{}).Where("{{.Primary.ColumnName}} = ?", {{Helper .Primary.AlisaColumnName}}).Updates(data)
+	return result.RowsAffected, result.Error
 }
 {{- end}}
 {{- else if eq .Type "Item"}}
@@ -108,53 +75,40 @@ func {{.Name}}(ctx context.Context,condition map[string]any)(res dao.{{CamelStr 
 		err = errors.New("condition is empty")
 		return
 	}
-	db := initial.Core.Store.LoadSQL("mysql").Read()
-	builder := sql.NewBuilder()
-	builder.Table("{{Char .Table.TableName}}")
+	db := initial.Core.Store.LoadSQL("postgres").Read()
+	builder := db.WithContext(ctx).Model(&dao.{{CamelStr .Table.TableName}}{})
 	{{Convert .Condition}}
-	query,args,err := builder.Row()
-	if err != nil {
-		return
-	}
-	err = db.QueryRow(ctx ,query,args...).ToStruct(&res)
+	err = builder.Find(&res).Error
 	return
 }
 {{- else if eq .Type "List"}}
 // {{.Name}} 查询列表数据
 func {{.Name}}(ctx context.Context,condition map[string]any)(res []dao.{{CamelStr .Table.TableName}}, err error){
-	db := initial.Core.Store.LoadSQL("mysql").Read()
-	builder := sql.NewBuilder()
-	builder.Table("{{Char .Table.TableName}}")
+	db := initial.Core.Store.LoadSQL("postgres").Read()
+	builder := db.WithContext(ctx).Model(&dao.{{CamelStr .Table.TableName}}{})
 	{{Convert .Condition}}
 	{{- if .Page}}
 	if val, ok := condition["pagination"]; ok {
 		pagination := val.(*sql.Pagination)
-		if pagination != nil {
-			builder.Offset(pagination.GetOffset())
-			builder.Limit(pagination.GetLimit())
+		if val, err := pagination.GetOffset(); err == nil {
+			builder.Offset(cast.ToInt(val))
+		}
+		if val, err := pagination.GetLimit(); err == nil {
+			builder.Limit(cast.ToInt(val))
 		}
 	}
 	{{- end}}
-	builder.OrderBy("{{Char .Primary.ColumnName}}", sql.DESC)
-	query,args,err := builder.Rows()
-	if err != nil {
-		return
-	}
-	err = db.QueryRows(ctx ,query,args...).ToStruct(&res)
+	builder.Order("{{.Primary.ColumnName}}")
+	err = builder.Find(&res).Error
 	return
 }
 {{- if .Page}}
 // {{.Name}}Total 查询列表数据总量
 func {{.Name}}Total(ctx context.Context,condition map[string]any)(res int64,err error){
-	db := initial.Core.Store.LoadSQL("mysql").Read()
-	builder := sql.NewBuilder()
-	builder.Table("{{Char .Table.TableName}}")
+	db := initial.Core.Store.LoadSQL("postgres").Read()
+	builder := db.WithContext(ctx).Model(&dao.{{CamelStr .Table.TableName}}{})
 	{{Convert .Condition}}
-	query,args,err := builder.Count()
-	if err != nil {
-		return
-	}
-	res,err = db.Count(ctx ,query,args...)
+	err = builder.Count(&res).Error
 	return
 }
 {{- end}}

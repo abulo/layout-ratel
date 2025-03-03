@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/abulo/layout/initial"
 	"github.com/abulo/layout/internal/routes"
@@ -22,23 +23,23 @@ func hertzPanicRecoveryHandler(ctx context.Context, newCtx *app.RequestContext, 
 }
 
 func (eng *Engine) NewHertzServer() error {
-	configApi := initial.Core.Config.Get("server.api")
-	cfg := configApi.(map[string]interface{})
+	var serverConf ServerConf
+	if err := initial.Core.Config.BindStruct("Server.Api", &serverConf); err != nil {
+		return err
+	}
 	//先获取这个服务是否是需要开启
-	if disable := cast.ToBool(cfg["Disable"]); disable {
-		logger.Logger.Error("server.api is disabled")
-		return nil
+	if !cast.ToBool(serverConf.Enable) {
+		return fmt.Errorf("Server.Api is disabled")
 	}
 	client := xhertz.New()
-	client.Host = cast.ToString(cfg["Host"])
-	client.Port = cast.ToInt(cfg["Port"])
-	client.Deployment = cast.ToString(cfg["Deployment"])
-	client.DisableMetric = cast.ToBool(cfg["DisableMetric"])
-	client.DisableTrace = cast.ToBool(cfg["DisableTrace"])
-	client.DisableSlowQuery = cast.ToBool(cfg["DisableSlowQuery"])
-	client.ServiceAddress = cast.ToString(cfg["ServiceAddress"])
-	client.SlowQueryThresholdInMill = cast.ToInt64(cfg["SlowQueryThresholdInMill"])
-	// client.Mode = xhertz.ReleaseMode
+	client.Host = cast.ToString(serverConf.Host)
+	client.Port = cast.ToInt(serverConf.Port)
+	client.Deployment = cast.ToString(serverConf.Deployment)
+	client.EnableMetric = cast.ToBool(serverConf.EnableMetric)
+	client.EnableTrace = cast.ToBool(serverConf.EnableTrace)
+	client.EnableSlowQuery = cast.ToBool(serverConf.EnableSlowQuery)
+	client.ServiceAddress = cast.ToString(serverConf.ServiceAddress)
+	client.SlowQueryThresholdInMill = cast.ToInt64(serverConf.SlowQueryThresholdInMill)
 
 	res := client.Build()
 	res.Use(recovery.Recovery(recovery.WithRecoveryHandler(hertzPanicRecoveryHandler)))

@@ -11,9 +11,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
-	{{- if .Page}}
-	"{{.ModName}}/service/pagination"
-	{{- end}}
 )
 // {{.Table.TableName}} {{.Table.TableComment}}
 
@@ -30,7 +27,7 @@ type Srv{{CamelStr .Table.TableName}}ServiceServer struct {
 func (srv Srv{{CamelStr .Table.TableName}}ServiceServer) {{.Name}}(ctx context.Context,request *{{.Name}}Request) (*{{.Name}}Response,error){
 	req := {{CamelStr .Table.TableName}}Dao(request.GetData())
 	data, err := {{.Pkg}}.{{.Name}}(ctx, *req)
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": req,
 			"err": err,
@@ -52,7 +49,7 @@ func (srv Srv{{CamelStr .Table.TableName}}ServiceServer) {{.Name}}(ctx context.C
 	}
 	req := {{CamelStr .Table.TableName}}Dao(request.GetData())
 	_, err := {{.Pkg}}.{{.Name}}(ctx, {{Helper .Primary.AlisaColumnName}}, *req)
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": req,
 			"err": err,
@@ -72,7 +69,7 @@ func (srv Srv{{CamelStr .Table.TableName}}ServiceServer){{.Name}}(ctx context.Co
 		return &{{.Name}}Response{}, status.Error(code.ConvertToGrpc(code.ParamInvalid), code.StatusText(code.ParamInvalid))
 	}
 	_, err := {{.Pkg}}.{{.Name}}(ctx, {{Helper .Primary.AlisaColumnName}})
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": {{Helper .Primary.AlisaColumnName}},
 			"err": err,
@@ -92,7 +89,7 @@ func (srv Srv{{CamelStr .Table.TableName}}ServiceServer){{.Name}}(ctx context.Co
 		return &{{.Name}}Response{}, status.Error(code.ConvertToGrpc(code.ParamInvalid), code.StatusText(code.ParamInvalid))
 	}
 	_, err := {{.Pkg}}.{{.Name}}(ctx, {{Helper .Primary.AlisaColumnName}})
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": {{Helper .Primary.AlisaColumnName}},
 			"err": err,
@@ -112,7 +109,7 @@ func (srv Srv{{CamelStr .Table.TableName}}ServiceServer){{.Name}}(ctx context.Co
 		return &{{.Name}}Response{}, status.Error(code.ConvertToGrpc(code.ParamInvalid), code.StatusText(code.ParamInvalid))
 	}
 	_, err := {{.Pkg}}.{{.Name}}(ctx, {{Helper .Primary.AlisaColumnName}})
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": {{Helper .Primary.AlisaColumnName}},
 			"err": err,
@@ -132,7 +129,7 @@ func (srv Srv{{CamelStr .Table.TableName}}ServiceServer) {{.Name}}(ctx context.C
 		return &{{.Name}}Response{}, status.Error(code.ConvertToGrpc(code.ParamInvalid), code.StatusText(code.ParamInvalid))
 	}
 	res,err := {{.Pkg}}.{{.Name}}(ctx ,{{Helper .Primary.AlisaColumnName}})
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": {{Helper .Primary.AlisaColumnName}},
 			"err": err,
@@ -161,7 +158,7 @@ func (srv Srv{{CamelStr .Table.TableName}}ServiceServer) {{.Name}}(ctx context.C
 		return &{{.Name}}Response{},  status.Error(code.ConvertToGrpc(code.SqlError), err.Error())
 	}
 	res,err := {{.Pkg}}.{{.Name}}(ctx ,condition)
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": condition,
 			"err": err,
@@ -205,7 +202,7 @@ func (srv Srv{{CamelStr .Table.TableName}}ServiceServer){{.Name}}(ctx context.Co
 	{{- end}}
 	// 获取数据集合
 	list, err := {{.Pkg}}.{{.Name}}(ctx, condition)
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": condition,
 			"err": err,
@@ -231,7 +228,7 @@ func (srv Srv{{CamelStr .Table.TableName}}ServiceServer){{.Name}}Total(ctx conte
 	{{ModuleProtoConvertMap .Condition "request"}}
 	// 获取数据集合
 	total, err := {{.Pkg}}.{{.Name}}Total(ctx, condition)
-	if sql.ResultAccept(err) != nil {
+	if sql.Acceptable(err) != nil {
 		globalLogger.Logger.WithFields(logrus.Fields{
 			"req": condition,
 			"err": err,

@@ -6,61 +6,87 @@ import (
 	"github.com/spf13/cast"
 )
 
+type (
+	RedisConf struct {
+		ClientType   *string          `json:"ClientType"`
+		Addr         *string          `json:"Addr"`
+		Hosts        *StringSlice     `json:"Hosts"`
+		Addrs        *StringMapString `json:"Addrs"`
+		MasterName   *string          `json:"MasterName"`
+		Database     *int             `json:"Database"`
+		Password     *string          `json:"Password"`
+		PoolSize     *int             `json:"PoolSize"`
+		EnableMetric *bool            `json:"EnableMetric"`
+		EnableTrace  *bool            `json:"EnableTrace"`
+		LinkNode     *string          `json:"LinkNode"`
+	}
+	ProxyRedisConf struct {
+		Name     *string `json:"Name"`
+		LinkNode *string `json:"LinkNode"`
+	}
+)
+
 // InitRedis load redis && returns an redis instance.
 func (initial *Initial) InitRedis() *Initial {
-	configs := initial.Config.Get("redis")
-	list := configs.(map[string]interface{})
+
+	var redisConfigs []RedisConf
+	if err := initial.Config.BindStruct("Redis", &redisConfigs); err != nil {
+		panic(err)
+	}
+
 	links := make(map[string]*redis.Client)
-	for node, nodeConfig := range list {
+	for _, item := range redisConfigs {
 		opts := make([]redis.Option, 0)
-		res := nodeConfig.(map[string]interface{})
-		if ClientType := cast.ToString(res["ClientType"]); ClientType != "" {
-			opts = append(opts, redis.WithClientType(ClientType))
+		if item.ClientType == nil {
+			panic("redis ClientType is empty")
 		}
-		if Hosts := cast.ToStringSlice(res["Hosts"]); len(Hosts) > 0 {
-			opts = append(opts, redis.WithHosts(Hosts))
+		opts = append(opts, redis.WithClientType(cast.ToString(item.ClientType)))
+		if item.Hosts != nil {
+			opts = append(opts, redis.WithHosts(*item.Hosts))
 		}
-		if Password := cast.ToString(res["Password"]); Password != "" {
-			opts = append(opts, redis.WithPassword(Password))
+		if item.Password != nil {
+			opts = append(opts, redis.WithPassword(cast.ToString(item.Password)))
 		}
-		if Database := cast.ToInt(res["Database"]); Database > 0 {
-			opts = append(opts, redis.WithDatabase(Database))
+		if item.Database != nil {
+			opts = append(opts, redis.WithDatabase(cast.ToInt(item.Database)))
 		}
-		if PoolSize := cast.ToInt(res["PoolSize"]); PoolSize > 0 {
-			opts = append(opts, redis.WithPoolSize(PoolSize))
+		if item.PoolSize != nil {
+			opts = append(opts, redis.WithPoolSize(cast.ToInt(item.PoolSize)))
 		}
-		if KeyPrefix := cast.ToString(res["KeyPrefix"]); KeyPrefix != "" {
-			opts = append(opts, redis.WithKeyPrefix(KeyPrefix))
+		opts = append(opts, redis.WithEnableMetric(cast.ToBool(item.EnableMetric)))
+		opts = append(opts, redis.WithEnableTrace(cast.ToBool(item.EnableTrace)))
+		if item.Addr != nil {
+			opts = append(opts, redis.WithAddr(cast.ToString(item.Addr)))
 		}
-		opts = append(opts, redis.WithDisableMetric(cast.ToBool(res["DisableMetric"])))
-		opts = append(opts, redis.WithDisableTrace(cast.ToBool(res["DisableTrace"])))
-		if Addr := cast.ToString(res["Addr"]); Addr != "" {
-			opts = append(opts, redis.WithAddr(Addr))
+		if item.Addrs != nil {
+			opts = append(opts, redis.WithAddrs(*item.Addrs))
 		}
-		if Addrs := cast.ToStringMapString(res["Addrs"]); len(Addrs) > 0 {
-			opts = append(opts, redis.WithAddrs(Addrs))
-		}
-		if MasterName := cast.ToString(res["MasterName"]); MasterName != "" {
-			opts = append(opts, redis.WithMasterName(MasterName))
+		if item.MasterName != nil {
+			opts = append(opts, redis.WithMasterName(cast.ToString(item.MasterName)))
 		}
 		conn, err := redis.NewRedisClient(opts...)
 		if err != nil {
 			panic(err)
 		}
-		links["redis."+node] = conn
+		node := cast.ToString(item.LinkNode)
+		links[node] = conn
 	}
-	proxyConfigs := initial.Config.Get("proxyredis")
-	proxyRes := proxyConfigs.([]map[string]interface{})
-	for _, val := range proxyRes {
+
+	var proxyConfigs []ProxyRedisConf
+	if err := initial.Config.BindStruct("ProxyRedis", &proxyConfigs); err != nil {
+		panic(err)
+	}
+	for _, item := range proxyConfigs {
 		proxyPool := proxy.NewRedis()
-		if node := cast.ToStringSlice(val["Node"]); len(node) > 0 {
-			for _, v := range node {
-				proxyPool.Store(links[v])
-			}
+		if item.LinkNode == nil {
+			panic("redis LinkNode is empty")
 		}
-		if Name := cast.ToString(val["Name"]); Name != "" {
-			initial.Store.StoreRedis(Name, proxyPool)
+		node := cast.ToString(item.LinkNode)
+		proxyPool.Store(links[node])
+		if item.Name == nil {
+			panic("redis Name is empty")
 		}
+		initial.Store.StoreRedis(cast.ToString(item.Name), proxyPool)
 	}
 	return initial
 }

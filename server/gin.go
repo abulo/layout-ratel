@@ -1,8 +1,9 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/abulo/layout/initial"
-	"github.com/abulo/ratel/v3/core/logger"
 	"github.com/abulo/ratel/v3/server/xgin"
 	"github.com/abulo/ratel/v3/util"
 	"github.com/spf13/cast"
@@ -17,22 +18,24 @@ func FormatDateTime(str interface{}) string {
 }
 
 func (eng *Engine) NewGinServer() error {
-	configAdmin := initial.Core.Config.Get("server.admin")
-	cfg := configAdmin.(map[string]interface{})
-	//先获取这个服务是否是需要开启
-	if disable := cast.ToBool(cfg["Disable"]); disable {
-		logger.Logger.Error("server.admin is disabled")
-		return nil
+	var serverConf ServerConf
+	if err := initial.Core.Config.BindStruct("Server.Admin", &serverConf); err != nil {
+		return err
 	}
+	//先获取这个服务是否是需要开启
+	if !cast.ToBool(serverConf.Enable) {
+		return fmt.Errorf("Server.Admin is disabled")
+	}
+
 	client := xgin.New()
-	client.Host = cast.ToString(cfg["Host"])
-	client.Port = cast.ToInt(cfg["Port"])
-	client.Deployment = cast.ToString(cfg["Deployment"])
-	client.DisableMetric = cast.ToBool(cfg["DisableMetric"])
-	client.DisableTrace = cast.ToBool(cfg["DisableTrace"])
-	client.DisableSlowQuery = cast.ToBool(cfg["DisableSlowQuery"])
-	client.ServiceAddress = cast.ToString(cfg["ServiceAddress"])
-	client.SlowQueryThresholdInMill = cast.ToInt64(cfg["SlowQueryThresholdInMill"])
+	client.Host = cast.ToString(serverConf.Host)
+	client.Port = cast.ToInt(serverConf.Port)
+	client.Deployment = cast.ToString(serverConf.Deployment)
+	client.EnableMetric = cast.ToBool(serverConf.EnableMetric)
+	client.EnableTrace = cast.ToBool(serverConf.EnableTrace)
+	client.EnableSlowQuery = cast.ToBool(serverConf.EnableSlowQuery)
+	client.ServiceAddress = cast.ToString(serverConf.ServiceAddress)
+	client.SlowQueryThresholdInMill = cast.ToInt64(serverConf.SlowQueryThresholdInMill)
 	// if !initial.Core.Config.Bool("DisableDebug", true) {
 	// 	client.Mode = gin.DebugMode
 	// } else {

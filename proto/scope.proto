@@ -1,0 +1,9 @@
+syntax = "proto3";
+// scope 范围
+package scope;
+option go_package = "cloud/service/scope;scope";
+
+message ScopeRequest {
+    optional string start = 1; // 起始值（>=）
+    optional string end = 2;   // 结束值（<=）
+}
