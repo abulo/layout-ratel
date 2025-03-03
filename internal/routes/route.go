@@ -7,5 +7,5 @@ import (
 
 func InitRoute(handle *xhertz.Server) {
 	handle.Use(middleware.Limiter(), middleware.Request())
-
+	GlobalInitRoute(handle)
 }
