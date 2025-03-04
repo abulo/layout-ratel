@@ -3,7 +3,7 @@ module github.com/abulo/layout
 go 1.23.6
 
 require (
-	github.com/abulo/ratel/v3 v3.8.20
+	github.com/abulo/ratel/v3 v3.8.21
 	github.com/cloudwego/hertz v0.9.6
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/mojocn/base64Captcha v1.3.8
@@ -143,5 +143,3 @@ require (
 replace github.com/bytedance/sonic/loader => github.com/bytedance/sonic/loader v0.2.3
 
 replace github.com/bytedance/sonic => github.com/bytedance/sonic v1.12.7
-
-replace github.com/abulo/ratel/v3 => ../ratel

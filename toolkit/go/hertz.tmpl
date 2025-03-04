@@ -87,7 +87,7 @@ func {{.Name}}(ctx context.Context,newCtx *app.RequestContext) {
 	}
 	reqInfo.Id = nil
 	reqInfo.Creator = null.StringFrom(newCtx.GetString("userName"))
-	reqInfo.CreatedTime = null.TimeStampFrom(util.Now())
+	reqInfo.CreatedTime = null.DateTimeFrom(util.Now())
 	request.Data = {{.Pkg}}.{{CamelStr .Table.TableName}}Proto(reqInfo)
 	// 执行服务
 	res, err := client.{{.Name}}(ctx, request)
@@ -147,9 +147,9 @@ func {{.Name}}(ctx context.Context,newCtx *app.RequestContext) {
 	}
 	reqInfo.Id = nil
 	reqInfo.Updater = null.StringFrom(newCtx.GetString("userName"))
-	reqInfo.UpdatedTime = null.TimeStampFrom(util.Now())
+	reqInfo.UpdatedTime = null.DateTimeFrom(util.Now())
 	reqInfo.Creator = null.StringFromPtr(nil)
-	reqInfo.CreatedTime = null.TimeStampFromPtr(nil)
+	reqInfo.CreatedTime = null.DateTimeFromPtr(nil)
 	request.Data = {{.Pkg}}.{{CamelStr .Table.TableName}}Proto(reqInfo)
 	// 执行服务
 	res, err := client.{{.Name}}(ctx, request)
